@@ -1,6 +1,6 @@
 // controllers/authController.js
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 import { UserModel } from '../Models/UserModel.js';
 
 // Sign up
@@ -16,7 +16,7 @@ export const signup = async (req, res) => {
     return res.status(400).json({ error: "User with the same email already exists." });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10);
   const newUser = new UserModel({ email, password: hashedPassword, role });
   await newUser.save();
 
@@ -41,7 +41,7 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: 'Not Get User In DataBase' });
   }
    // Compare Secured (hashed) Password with provided password
-   const passwordMatch = await bcrypt.compare(password, user.password);
+   const passwordMatch = await bcryptjs.compare(password, user.password);
 
    // check is the provided password match with user password
    if (!passwordMatch) {
