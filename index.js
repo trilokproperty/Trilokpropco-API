@@ -22,7 +22,14 @@ import { userRouter } from "./Routers/user.js";
 const app = express();
 const PORT = 5000;
 dotenv.config()
-app.use(cors())
+
+const corsConfig ={
+    origin:'*',
+    Credential:true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}
+
+app.use(cors(corsConfig))
 app.use(express.json())
 app.use('/status', statusRouter)
 app.use('/type', typeRouter)
