@@ -24,4 +24,4 @@ propertyRouter.delete('/:id/galleryImage', verifyEditor, deleteGalleryImage)
 propertyRouter.delete('/:id/bankImage', verifyEditor, deleteBankImage)
 
 // get property with location id api:
-propertyRouter.get('/location/:id', getPropertiesByLocation)
+propertyRouter.get('/location/:locationId', getPropertiesByLocation)
