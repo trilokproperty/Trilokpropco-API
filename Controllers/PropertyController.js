@@ -168,3 +168,14 @@ export const searchProperty = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
+// find property by location id:
+const getPropertiesByLocation = async (req, res) => {
+    try {
+      const { locationId } = req.params;
+      const properties = await PropertyModel.find({ location: locationId });
+      res.status(200).json(properties);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching properties", error });
+    }
+  };
+  
