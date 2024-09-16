@@ -26,7 +26,18 @@ export const getCity = async (req, res) =>{
         res.status(500).json({ message: "Internal Server Error."});
 
 }}
-
+// get city with id:
+export const getSingleCity = async (req, res)=>{
+    const {id} = req.params;
+    try{
+        const city = await CityModel.findById(id)
+        res.status(200).json(city)
+    }
+    catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error."});
+    }
+}
 // delete City controller:
 export const deleteCity = async(req, res) =>{
     const id = req.params.id;
