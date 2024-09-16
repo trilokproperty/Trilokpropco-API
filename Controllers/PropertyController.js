@@ -169,7 +169,7 @@ export const searchProperty = async (req, res) => {
     }
 };
 // find property by location id:
-const getPropertiesByLocation = async (req, res) => {
+export const getPropertiesByLocation = async (req, res) => {
     try {
       const { locationId } = req.params;
       const properties = await PropertyModel.find({ location: locationId });
