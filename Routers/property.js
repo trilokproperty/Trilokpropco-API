@@ -1,5 +1,5 @@
 import express from "express";
-import { addProperty, deleteProperty, getProperty, updateProperty, deleteGalleryImage, getSingleProperty, deleteBankImage, searchProperty, getPropertiesByLocation, getPropertiesByType } from "../Controllers/PropertyController.js";
+import { addProperty, deleteProperty, getProperty, updateProperty, deleteGalleryImage, getSingleProperty, deleteBankImage, searchProperty, getPropertiesByLocation, getPropertiesByType, getSinglePropertyName } from "../Controllers/PropertyController.js";
 import { verifyAdmin, verifyEditor } from "../MiddleWare/jwt.js";
 
 export const propertyRouter = express.Router();
@@ -12,8 +12,10 @@ propertyRouter.get('/search', searchProperty);
 propertyRouter.post('/', verifyEditor, addProperty);
 // GET Property:
 propertyRouter.get('/', getProperty)
-// GET sing Property:
+// GET single Property with id:
 propertyRouter.get('/:id', getSingleProperty)
+// GET single Property with name:
+propertyRouter.get('/:name', getSinglePropertyName)
 // update Property:
 propertyRouter.put('/:id', verifyEditor, updateProperty)
 // delete Property:

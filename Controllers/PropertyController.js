@@ -51,11 +51,26 @@ export const getProperty = async (req, res) =>{
 
 }}
 
-// get properties controller:
+// get property controller with id:
 export const getSingleProperty = async (req, res) =>{
     const id = req.params.id;
     try{
       const property= await PropertyModel.findById(id);
+      if(!property){
+        return res.status(404).json({message: "property not found."})
+      }
+      res.status(200).json(property)
+    }catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error."});
+
+}}
+
+// get property controller with property name:
+export const getSinglePropertyName = async (req, res) =>{
+    const name = req.params.name;
+    try{
+      const property= await PropertyModel.find({name: name});
       if(!property){
         return res.status(404).json({message: "property not found."})
       }
