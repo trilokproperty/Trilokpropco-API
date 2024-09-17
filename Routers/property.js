@@ -1,5 +1,5 @@
 import express from "express";
-import { addProperty, deleteProperty, getProperty, updateProperty, deleteGalleryImage, getSingleProperty, deleteBankImage, searchProperty, getPropertiesByLocation } from "../Controllers/PropertyController.js";
+import { addProperty, deleteProperty, getProperty, updateProperty, deleteGalleryImage, getSingleProperty, deleteBankImage, searchProperty, getPropertiesByLocation, getPropertiesByType } from "../Controllers/PropertyController.js";
 import { verifyAdmin, verifyEditor } from "../MiddleWare/jwt.js";
 
 export const propertyRouter = express.Router();
@@ -25,3 +25,7 @@ propertyRouter.delete('/:id/bankImage', verifyEditor, deleteBankImage)
 
 // get property with location id api:
 propertyRouter.get('/location/:locationId', getPropertiesByLocation)
+
+
+// get property with type id api:
+propertyRouter.get('/type/:typeId', getPropertiesByType)
