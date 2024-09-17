@@ -72,7 +72,7 @@ export const getSinglePropertyByName = async (req, res) => {
     console.log(name)
     try {
         // Case-insensitive and removing unnecessary spaces
-        const property = await PropertyModel.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+        const property = await PropertyModel.findOne({ name: name });
         
         if (!property) {
             return res.status(404).json({ message: "Property not found." });
