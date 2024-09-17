@@ -67,19 +67,22 @@ export const getSingleProperty = async (req, res) =>{
 }}
 
 // get property controller with property name:
-export const getSinglePropertyName = async (req, res) =>{
+export const getSinglePropertyByName = async (req, res) => {
     const name = req.params.name;
-    try{
-      const property= await PropertyModel.findOne({name: name});
-      if(!property){
-        return res.status(404).json({message: "property not found."})
-      }
-      res.status(200).json(property)
-    }catch (e) {
-        console.log(e.message);
-        res.status(500).json({ message: "Internal Server Error."});
-
-}}
+    try {
+        // Case-insensitive and removing unnecessary spaces
+        const property = await PropertyModel.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+        
+        if (!property) {
+            return res.status(404).json({ message: "Property not found." });
+        }
+        
+        res.status(200).json(property);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+};
 
 // delete Property controller:
 export const deleteProperty = async(req, res) =>{
