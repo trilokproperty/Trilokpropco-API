@@ -17,6 +17,7 @@ const propertySchema = new mongoose.Schema({
         ref: 'Status'
     },
     priceRange: { type: String, required: true },
+    category: { type: String, required: true },
     configuration: { type: String, required: true },
     galleryImages: { type: [String], required: true },
     bankImages: { type: [String], required: true },
