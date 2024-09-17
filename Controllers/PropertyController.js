@@ -180,3 +180,14 @@ export const getPropertiesByLocation = async (req, res) => {
     }
   };
   
+// find property by type id:
+export const getPropertiesByType = async (req, res) => {
+    const { typeId } = req.params;
+    try {
+      const properties = await PropertyModel.find({type: typeId})
+            .populate('type')  
+      res.status(200).json(properties);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching properties", error });
+    }
+  };
