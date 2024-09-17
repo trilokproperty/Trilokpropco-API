@@ -70,7 +70,7 @@ export const getSingleProperty = async (req, res) =>{
 export const getSinglePropertyName = async (req, res) =>{
     const name = req.params.name;
     try{
-      const property= await PropertyModel.find({name: name});
+      const property= await PropertyModel.findOne({name: name});
       if(!property){
         return res.status(404).json({message: "property not found."})
       }
