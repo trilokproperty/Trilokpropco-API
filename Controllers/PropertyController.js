@@ -69,6 +69,7 @@ export const getSingleProperty = async (req, res) =>{
 // get property controller with property name:
 export const getSinglePropertyByName = async (req, res) => {
     const name = req.params.name;
+    console.log(name)
     try {
         // Case-insensitive and removing unnecessary spaces
         const property = await PropertyModel.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });

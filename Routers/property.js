@@ -14,8 +14,9 @@ propertyRouter.post('/', verifyEditor, addProperty);
 propertyRouter.get('/', getProperty)
 // GET single Property with id:
 propertyRouter.get('/:id', getSingleProperty)
-// GET single Property with name:
-propertyRouter.get('/:name', getSinglePropertyByName)
+
+// GET single Property by name (changed to a more explicit route):
+propertyRouter.get('/name/:name', getSinglePropertyByName);
 // update Property:
 propertyRouter.put('/:id', verifyEditor, updateProperty)
 // delete Property:
