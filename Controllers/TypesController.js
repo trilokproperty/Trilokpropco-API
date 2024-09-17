@@ -34,6 +34,20 @@ export const getTypes = async (req, res) =>{
         res.status(500).json({ message: "Internal Server Error."});
 
 }}
+
+// get type with id:
+export const getSingleType = async (req, res)=>{
+    const {id} = req.params;
+    try{
+        const type = await TypesModel.findById(id)
+        res.status(200).json(type)
+    }
+    catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error."});
+    }
+}
+
 // delete Type controller:
 export const deleteType = async(req, res) =>{
     const id = req.params.id;
