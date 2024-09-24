@@ -35,6 +35,3 @@ jobs:
         run: |
           pm2 save
 
-      - name: Restart PM2 Service (if needed)
-        run: |
-          sudo systemctl restart pm2-ubuntu
