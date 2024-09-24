@@ -23,14 +23,18 @@ jobs:
       - name: Install PM2 Globally
         run: sudo npm install -g pm2
 
+      - name: Sync Backend Directory
+        run: |
+          rsync -av --delete /home/ubuntu/actions-runner/_work/Trilokpropco-Backend/Trilokpropco-Backend/ /home/ubuntu/Trilokpropco-Backend/
+
       - name: Install Dependencies
         run: |
-          cd /home/ubuntu/Trilokpropco-Dashboard
+          cd /home/ubuntu/Trilokpropco-Backend
           npm install
 
       - name: Restart Backend
         run: |
-          cd /home/ubuntu/Trilokpropco-Dashboard
+          cd /home/ubuntu/Trilokpropco-Backend
           pm2 stop all || true  # Stop any running processes (ignore errors if no processes are running)
           pm2 start || pm2 start index.js  # Start your app using the ecosystem file or main script
           pm2 save  # Save the PM2 process list
