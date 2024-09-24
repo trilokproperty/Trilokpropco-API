@@ -1,3 +1,10 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+      
 deploy-frontend:
   runs-on: self-hosted
 
