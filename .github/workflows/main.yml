@@ -1,40 +1,26 @@
-name: Deploy Backend
+deploy-frontend:
+  runs-on: self-hosted
 
-on:
-  push:
-    branches:
-      - main  # Adjust to your desired branch for deployment
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
-jobs:
-  deploy-backend:
-    runs-on: self-hosted
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'  # Frontend using Node.js 18
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
+    - name: Sync Frontend Directory
+      run: |
+        rsync -av --delete /home/ubuntu/actions-runner/_work/todoapp-management/todoapp-management/todo-app-frontend/ /home/ubuntu/todoapp-management/todo-app-frontend/
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+    - name: Build and Deploy Frontend
+      run: |
+        cd /home/ubuntu/todoapp-management/todo-app-frontend
+        npm install
+        npm run build
+        sudo cp -r ./dist/* /var/www/html  # Make sure the frontend build outputs to 'dist'
 
-      - name: Install PM2 Globally
-        run: sudo npm install -g pm2
-
-      - name: Sync Backend Directory
-        run: |
-          rsync -av --delete /home/ubuntu/actions-runner/_work/Trilokpropco-Backend/Trilokpropco-Backend/ /home/ubuntu/Trilokpropco-Backend/
-
-      - name: Install Dependencies
-        run: |
-          cd /home/ubuntu/Trilokpropco-Backend
-          npm install
-
-      - name: Restart Backend
-        run: |
-          cd /home/ubuntu/Trilokpropco-Backend
-          pm2 stop all || true  # Stop any running processes (ignore errors if no processes are running)
-          pm2 start || pm2 start index.js  # Start your app using the ecosystem file or main script
-          pm2 save  # Save the PM2 process list
+    - name: Restart Nginx
+      run: |
+        sudo systemctl restart nginx
