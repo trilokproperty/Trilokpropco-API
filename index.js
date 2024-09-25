@@ -18,6 +18,7 @@ import { aboutRouter } from "./Routers/about.js";
 import { whyRouter } from "./Routers/why.js";
 import { servicesRouter } from "./Routers/services.js";
 import { userRouter } from "./Routers/user.js";
+import { metaRouter } from "./Routers/meta.js";
 
 const app = express();
 const PORT = 5000;
@@ -47,6 +48,7 @@ app.use('/why', whyRouter)
 app.use('/service', servicesRouter)
 app.use('/inquire', formRouter)
 app.use('/user', userRouter)
+app.use('/meta', metaRouter)
 
 
 const dbName = "trilokpropertyconsultant"

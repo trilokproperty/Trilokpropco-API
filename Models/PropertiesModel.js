@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 
 const propertySchema = new mongoose.Schema({
     name: { type: String, required: true },
+    metaTitle:{ type: String },
+    metaDescription:{ type: String },
     type: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Types'

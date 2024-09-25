@@ -10,6 +10,8 @@ const blogSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+    metaTitle:{ type: String },
+    metaDescription:{ type: String },
         description:{
             type: String,
             required: true
