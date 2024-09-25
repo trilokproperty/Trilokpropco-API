@@ -11,4 +11,4 @@ userRouter.post('/login', login)
 userRouter.get('/me', verifyToken, getCurrentUser);
 userRouter.get('/', getUsers)
 userRouter.delete('/:id', verifyAdmin, deleteUser)
-userRouter.put('/:id', verifyAdmin, updateUser)
+userRouter.put('/:id', updateUser)
