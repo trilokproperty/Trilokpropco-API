@@ -91,9 +91,10 @@ export const updateUser = async (req, res) =>{
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
+        const hashedPassword = await bcryptjs.hash(password, 10);
      const updatedUser = await UserModel.findByIdAndUpdate(id,{
         email: email || user.email,
-        password: password || user.password,
+        password: hashedPassword || user.password,
         role: role || user.role,
       }, { new: true });
     res.status(200).json(updatedUser);
