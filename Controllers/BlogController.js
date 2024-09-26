@@ -11,6 +11,8 @@ export const addBlog = async (req, res) => {
         }
         const allFields = {
             category: req.body.category,
+            metaTitle: req.body.metaTitle,
+            metaDescription: req.body.metaDescription,
             title: req.body.title,
             description: req.body.description,
             image: imageResult ? imageResult.secure_url : undefined,
@@ -77,6 +79,8 @@ export const updateBlog = async (req, res) => {
             title: req.body.title || blog.title,
             description: req.body.description || blog.description,
             image: imageResult ? imageResult.secure_url : blog.image,
+            metaTitle: req.body.metaTitle || blog.metaTitle,
+            metaDescription: req.body.metaDescription || blog.metaDescription,
             date: req.body.date || blog.date,
             imagePublicId: imageResult ? imageResult.public_id : blog.imagePublicId
         };
