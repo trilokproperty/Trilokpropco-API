@@ -1,7 +1,7 @@
 import express from "express";
-import { upload } from "../MiddleWare/multer";
-import { addMeta, getAllMeta, updateMeta } from "../Controllers/MetaController";
-import { verifyEditor } from "../MiddleWare/jwt";
+import { upload } from "../MiddleWare/multer.js";
+import { addMeta, getAllMeta, updateMeta } from "../Controllers/MetaController.js";
+import { verifyEditor } from "../MiddleWare/jwt.js";
 
 
 export const metaRouter = express.Router();

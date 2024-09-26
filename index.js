@@ -25,7 +25,7 @@ const PORT = 5000;
 dotenv.config()
 
 const corsConfig ={
-    origin:'admin.trilokpropco.com',
+    origin:'*',
     Credential:true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }
