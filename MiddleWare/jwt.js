@@ -26,7 +26,7 @@ export const verifyToken = (req, res, next) => {
             next();
         });
   } catch (err) {
-    res.status(400).json({ message: 'Invalid Token' });
+    res.status(500).json({message: "Internal Serval Error."})
   }
 };
 
