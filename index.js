@@ -32,24 +32,23 @@ const corsConfig ={
 app.options("", cors(corsConfig))
 app.use(cors(corsConfig))
 app.use(express.json())
-app.use('/status', statusRouter)
-app.use('/type', typeRouter)
-app.use('/amenity', amenitiesRouter)
-app.use('/developer', developerRouter)
-app.use('/property', propertyRouter)
-app.use('/blogCategory', blogCategoryRouter)
-app.use('/blog', blogRouter)
-app.use('/city', cityRouter)
-app.use('/testimonial', testimonialRouter)
-app.use('/partner', partnerRouter)
-app.use('/footer', footerRouter)
-app.use('/about', aboutRouter)
-app.use('/why', whyRouter)
-app.use('/service', servicesRouter)
-app.use('/inquire', formRouter)
-app.use('/user', userRouter)
-app.use('/meta', metaRouter)
-
+app.use('/api/status', statusRouter);
+app.use('/api/type', typeRouter);
+app.use('/api/amenity', amenitiesRouter);
+app.use('/api/developer', developerRouter);
+app.use('/api/property', propertyRouter);
+app.use('/api/blogCategory', blogCategoryRouter);
+app.use('/api/blog', blogRouter);
+app.use('/api/city', cityRouter);
+app.use('/api/testimonial', testimonialRouter);
+app.use('/api/partner', partnerRouter);
+app.use('/api/footer', footerRouter);
+app.use('/api/about', aboutRouter);
+app.use('/api/why', whyRouter);
+app.use('/api/service', servicesRouter);
+app.use('/api/inquire', formRouter);
+app.use('/api/user', userRouter);
+app.use('/api/meta', metaRouter);
 
 const dbName = "trilokpropertyconsultant"
 const dbUser = process.env.DBUSER
