@@ -3,6 +3,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 
 // add Blog controller:
 export const addBlog = async (req, res) => {
+    console.log('Request Body:', req.body);
     try {
         let imageResult;
         console.log(req.file)
@@ -57,6 +58,7 @@ export const getSingleBlog = async (req, res) => {
 // update Blog
 export const updateBlog = async (req, res) => {
     const id = req.params.id;
+    console.log('Request Body:', req.body); 
     try {
         const blog = await blogModel.findById(id);
         if (!blog) {
