@@ -25,9 +25,10 @@ export const verifyToken = (req, res, next) => {
             req.decoded = decoded;
             next();
         });
-  } catch (err) {
+  } catch (e){
+    console.log(e.message)
     res.status(500).json({message: "Internal Serval Error."})
-  }
+}
 };
 
 // Verify Admin Middleware
