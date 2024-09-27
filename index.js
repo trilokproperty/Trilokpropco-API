@@ -44,10 +44,12 @@ app.use('/api/inquire', formRouter);
 app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
 
-app.use('/proxy', (req, res) => {
-    const url = req.url.substring(1); // Remove leading '/'
-    req.pipe(request(url)).pipe(res);
+app.use('/api/proxy/', (req, res) => {
+    const targetUrl = req.url.replace('/api/proxy/', ''); // Removing the prefix
+    const fullUrl = decodeURIComponent(targetUrl); // Decoding the URL
+    request(fullUrl).pipe(res); // Forwarding the request
 });
+
 
 const dbName = "trilokpropertyconsultant"
 const dbUser = process.env.DBUSER
