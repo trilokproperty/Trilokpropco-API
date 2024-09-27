@@ -19,16 +19,18 @@ import { whyRouter } from "./Routers/why.js";
 import { servicesRouter } from "./Routers/services.js";
 import { userRouter } from "./Routers/user.js";
 import { metaRouter } from "./Routers/meta.js";
-import request from "request";
 
 const app = express();
 const PORT = 5000;
 dotenv.config()
-app.use(cors({
-  origin: '*', // Allow all origins - change this to your specific origin if needed
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow specific HTTP methods
-  allowedHeaderss: ['Content-Type', 'Authorization'], // Allow specific headers
-}));
+
+const corsConfig ={
+    origin:'*',
+    Credential:true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}
+app.options("", cors(corsConfig))
+app.use(cors(corsConfig))
 app.use(express.json())
 app.use('/api/status', statusRouter);
 app.use('/api/type', typeRouter);
@@ -45,9 +47,8 @@ app.use('/api/about', aboutRouter);
 app.use('/api/why', whyRouter);
 app.use('/api/service', servicesRouter);
 app.use('/api/inquire', formRouter);
-app.use('/api/user', userRouter);s
+app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
-
 
 const dbName = "trilokpropertyconsultant"
 const dbUser = process.env.DBUSER
