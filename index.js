@@ -44,11 +44,35 @@ app.use('/api/inquire', formRouter);
 app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
 
+// Updated proxy setup
 app.use('/api/proxy/', (req, res) => {
-    const targetUrl = req.url.replace('/api/proxy/', ''); // Removing the prefix
-    const fullUrl = decodeURIComponent(targetUrl); // Decoding the URL
-    request(fullUrl).pipe(res); // Forwarding the request
-});
+    // Construct the full URL by decoding the incoming URL from the request
+    const targetUrl = decodeURIComponent(req.url.replace('/api/proxy/', ''));
+    console.log('Proxying request to:', targetUrl); // Log the target URL for debugging
+  
+    // Set the necessary headers for CORS handling
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+    // Forward the request to the target URL
+    request(
+      {
+        url: targetUrl,
+        method: req.method,
+        headers: req.headers,
+        body: req.body,
+        json: true,
+      },
+      (error, response, body) => {
+        if (error) {
+          res.status(500).send({ error: 'Error forwarding request' });
+        } else {
+          res.status(response.statusCode).send(body);
+        }
+      }
+    );
+  });
 
 
 const dbName = "trilokpropertyconsultant"
