@@ -24,13 +24,7 @@ const app = express();
 const PORT = 5000;
 dotenv.config()
 
-const corsConfig ={
-    origin:'*',
-    Credential:true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-}
-app.options("", cors(corsConfig))
-app.use(cors(corsConfig))
+app.use(cors())
 app.use(express.json())
 app.use('/api/status', statusRouter);
 app.use('/api/type', typeRouter);
