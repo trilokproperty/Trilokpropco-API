@@ -7,6 +7,7 @@ export const addFooter = async (req, res) => {
         const imageResult = await cloudinary.uploader.upload(req.file.path);
         const footerData = {
             description: req.body.description,
+            regis: req.body.regis,
             image: imageResult.secure_url,
             facebook: req.body.facebook,
             instagram: req.body.instagram,
@@ -40,6 +41,7 @@ export const getFooters = async (req, res) => {
 
 // Update Footer controller
 export const updateFooter = async (req, res) => {
+    
     try {
         const { id } = req.params;
         const existingFooter = await FooterModel.findById(id);
@@ -49,6 +51,7 @@ export const updateFooter = async (req, res) => {
 
         const updatedData = {
             description: req.body.description || existingFooter.description,
+            regis: req.body.regis || existingFooter.regis,
             facebook: req.body.facebook || existingFooter.facebook,
             instagram: req.body.instagram || existingFooter.instagram,
             youtube: req.body.youtube || existingFooter.youtube,

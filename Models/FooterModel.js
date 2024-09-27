@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const footerSchema = new mongoose.Schema({ 
     description: { type: String, required: true },
+    regis:{ type: String, required: true },
     image: { type: String, required: true },
     facebook: { type: String, required: true },
     instagram: { type: String, required: true },
