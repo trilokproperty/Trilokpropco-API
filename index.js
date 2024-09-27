@@ -24,8 +24,11 @@ import request from "request";
 const app = express();
 const PORT = 5000;
 dotenv.config()
-
-app.use(cors())
+app.use(cors({
+  origin: '*', // Allow all origins - change this to your specific origin if needed
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow specific HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+}));
 app.use(express.json())
 app.use('/api/status', statusRouter);
 app.use('/api/type', typeRouter);
@@ -46,33 +49,27 @@ app.use('/api/user', userRouter);s
 app.use('/api/meta', metaRouter);
 
 // Updated proxy setup
-app.use('/api/proxy/', (req, res) => {
+app.use('/api/proxy/*', (req, res, next) => {
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return res.status(204).end();
+    }
+  
     // Construct the full URL by decoding the incoming URL from the request
     const targetUrl = decodeURIComponent(req.url.replace('/api/proxy/', ''));
     console.log('Proxying request to:', targetUrl); // Log the target URL for debugging
   
-    // Set the necessary headers for CORS handling
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
     // Forward the request to the target URL
-    request(
-      {
-        url: targetUrl,
-        method: req.method,
-        headers: req.headers,
-        body: req.body,
-        json: true,
-      },
-      (error, response, body) => {
-        if (error) {
+    req.pipe(
+      request(targetUrl)
+        .on('error', (err) => {
+          console.error('Error forwarding request:', err);
           res.status(500).send({ error: 'Error forwarding request' });
-        } else {
-          res.status(response.statusCode).send(body);
-        }
-      }
-    );
+        })
+    ).pipe(res);
   });
 
 
