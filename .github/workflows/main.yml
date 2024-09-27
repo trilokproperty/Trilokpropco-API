@@ -18,6 +18,13 @@ jobs:
         with:
           node-version: '18'  # Backend using Node.js 18
 
+      - name: Uninstall and Reinstall PM2 Globally
+        run: |
+          # Uninstall PM2 globally to ensure a clean installation
+          npm uninstall -g pm2
+          # Reinstall PM2 globally
+          npm install -g pm2
+
       - name: Sync Backend Directory
         run: |
           # Sync code from GitHub Actions to the server directory
@@ -31,15 +38,5 @@ jobs:
 
       - name: Start or Restart Backend with PM2
         run: |
-          # Check if PM2 process exists; if so, restart it; otherwise, start a new process
-          pm2 describe Trilokpropco-Backend > /dev/null 2>&1
-          if [ $? -eq 0 ]; then
-            pm2 restart Trilokpropco-Backend
-          else
-            pm2 start /home/ubuntu/Trilokpropco-Backend/index.js --name Trilokpropco-Backend
-          fi
-
-      - name: Save PM2 process list
-        run: |
-          # Save PM2 process list to ensure it runs on server restart
-          pm2 save
+            pm2 start /home/ubuntu/Trilokpropco-Backend/index.js --name Trilokpropco-Backend --update-env
+          
