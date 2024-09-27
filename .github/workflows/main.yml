@@ -38,5 +38,10 @@ jobs:
 
       - name: Start or Restart Backend with PM2
         run: |
+          # Check if PM2 process exists; if so, restart it; otherwise, start a new process
+          pm2 describe Trilokpropco-Backend > /dev/null 2>&1
+          if [ $? -eq 0 ]; then
+            pm2 restart Trilokpropco-Backend -f --update-env
+          else
             pm2 start /home/ubuntu/Trilokpropco-Backend/index.js --name Trilokpropco-Backend --update-env
-          
+          fi
