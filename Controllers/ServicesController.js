@@ -1,4 +1,5 @@
 import { ServicesModel } from "../Models/ServicesModel.js";
+import { SectionTextModel } from "../Models/SectionText.js";
 import { cloudinary } from "../utils/cloudinary.js";
 
 export const addService = async (req, res) => {
@@ -17,7 +18,26 @@ export const addService = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
-
+export const addServiceText = async (req, res) => {
+    try{
+        const service = new SectionTextModel({serviceDes: req.serviceDes});
+        const savedService = await service.save();
+        res.status(200).json(savedService);
+    }
+    catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+}
+export const getServiceTexts = async (req, res) => {
+    try {
+        const serviceTexts = await SectionTextModel.find();
+        res.status(200).json(serviceTexts);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+};
 export const getServices = async (req, res) => {
     try {
         const services = await ServicesModel.find();
