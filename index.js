@@ -19,6 +19,7 @@ import { whyRouter } from "./Routers/why.js";
 import { servicesRouter } from "./Routers/services.js";
 import { userRouter } from "./Routers/user.js";
 import { metaRouter } from "./Routers/meta.js";
+import request from "request";
 
 const app = express();
 const PORT = 5000;
@@ -41,7 +42,7 @@ app.use('/api/about', aboutRouter);
 app.use('/api/why', whyRouter);
 app.use('/api/service', servicesRouter);
 app.use('/api/inquire', formRouter);
-app.use('/api/user', userRouter);
+app.use('/api/user', userRouter);s
 app.use('/api/meta', metaRouter);
 
 // Updated proxy setup
