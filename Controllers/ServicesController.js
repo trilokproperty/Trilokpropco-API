@@ -20,9 +20,27 @@ export const addService = async (req, res) => {
 };
 export const addServiceText = async (req, res) => {
     try{
-        const service = new SectionTextModel({serviceDes: req.serviceDes});
+        const service = new SectionTextModel({serviceDes: req.body.serviceDes});
         const savedService = await service.save();
         res.status(200).json(savedService);
+    }
+    catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+}
+export const updateServiceText = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const existingService = await SectionTextModel.findById(id);
+        if (!existingService) {
+            return res.status(404).json({ message: "Service not found" });
+        }
+        const updatedData = {
+            serviceDes: req.body.serviceDes || existingService.serviceDes
+        };
+        const updatedService = await SectionTextModel.findByIdAndUpdate(id, updatedData, { new: true });
+        res.status(200).json(updatedService);
     }
     catch (e) {
         console.log(e.message);
