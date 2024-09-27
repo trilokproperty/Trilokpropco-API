@@ -44,6 +44,11 @@ app.use('/api/inquire', formRouter);
 app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
 
+app.use('/proxy', (req, res) => {
+    const url = req.url.substring(1); // Remove leading '/'
+    req.pipe(request(url)).pipe(res);
+});
+
 const dbName = "trilokpropertyconsultant"
 const dbUser = process.env.DBUSER
 const dbPassword = process.env.DBPASS
