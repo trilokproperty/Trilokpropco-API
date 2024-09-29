@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 import { PropertyModel } from "../Models/PropertiesModel.js";
+import { cloudinary } from '../utils/cloudinary.js';
 
 
-// post property controller:
 export const addProperty = async (req, res) => {
     try {
         const { name } = req.body;
@@ -11,18 +11,75 @@ export const addProperty = async (req, res) => {
         if (existingProject) {
             return res.status(400).json({ message: "Project already exists." });
         }
-        
-        
-        const propertyData = req.body;
 
+        // Arrays to hold Cloudinary URLs for gallery and bank images
+        const galleryImages = [];
+        const bankImages = [];
+        const plans = [];
+
+        console.log("Uploaded files:", req.files);
+
+        // Upload galleryImages to Cloudinary
+        if (req.files['galleryImages'] && req.files['galleryImages'].length > 0) {
+            const galleryUploadPromises = req.files['galleryImages'].map(file => 
+                cloudinary.uploader.upload(file.path)
+            );
+            const galleryResults = await Promise.all(galleryUploadPromises);
+            galleryResults.forEach(result => galleryImages.push(result.secure_url));
+        } else {
+            console.log("No gallery images received");
+        }
+
+        // Upload bankImages to Cloudinary
+        if (req.files['bankImages'] && req.files['bankImages'].length > 0) {
+            const bankUploadPromises = req.files['bankImages'].map(file => 
+                cloudinary.uploader.upload(file.path)
+            );
+            const bankResults = await Promise.all(bankUploadPromises);
+            bankResults.forEach(result => bankImages.push(result.secure_url));
+        } else {
+            console.log("No bank images received");
+        }
+
+        // Upload plans (single image per plan type)
+        if (req.files['plans']) {
+            const planUploadPromises = req.files['plans'].map(async (file, index) => {
+                const result = await cloudinary.uploader.upload(file.path);
+                return {
+                    planType: req.body.planType[index],
+                    image: result.secure_url,
+                    size: req.body.planSize[index],
+                    price: req.body.planPrice[index]
+                };
+            });
+            const planResults = await Promise.all(planUploadPromises);
+            plans.push(...planResults);
+        } else {
+            console.log("No plans received");
+        }
+
+        // Prepare the property data object
+        const propertyData = {
+            ...req.body,
+            galleryImages,
+            bankImages,
+            plans
+        };
+
+        // Save property to the database
         const property = new PropertyModel(propertyData);
         const savedProperty = await property.save();
         res.status(200).json(savedProperty);
-    } catch (e) {
-        console.log(e.message);
+
+    } catch (error) {
+        console.error(error.message);
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
+
+
+
+
 // update Property
 export const updateProperty = async (req, res) => {
     const id =req.params.id;

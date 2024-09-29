@@ -51,13 +51,13 @@ const propertySchema = new mongoose.Schema({
         price: { type: String}
       }],
     },
-    pdfDownload: { type: String, required: true },
+    pdfDownload: { type: String},
     amenities: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Amenity'
     }],
-    nearbyFacilities: { type: String, required: true },
-    locationMap: { type: String, required: true },
+    nearbyFacilities: { type: String},
+    locationMap: { type: String},
     specifications: { type: String, required: true },
     video: { type: String, required: true },
     for: { type: String, required: true },
