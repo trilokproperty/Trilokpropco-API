@@ -7,10 +7,11 @@ export const propertyRouter = express.Router();
 // Define multiple fields to upload
 // Middleware to handle multiple file fields
 export const uploadFields = upload.fields([
-  { name: 'plans', maxCount: 1 }, 
   { name: 'galleryImages', maxCount: 20 },
-  { name: 'bankImages', maxCount: 20 }
+  { name: 'bankImages', maxCount: 20 },
+  { name: 'plans', maxCount: 10 }, // Handling multiple plan images in a single field
 ]);
+
 // Search Property (this should have a different route to avoid conflict)
 propertyRouter.get('/search', searchProperty);
 

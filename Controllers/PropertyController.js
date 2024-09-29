@@ -5,66 +5,83 @@ import { cloudinary } from '../utils/cloudinary.js';
 
 export const addProperty = async (req, res) => {
     try {
-      const { name } = req.body;
-      const existingProject = await PropertyModel.findOne({ name });
-  
-      if (existingProject) {
-        return res.status(400).json({ message: "Project already exists." });
-      }
-  
-      const galleryImages = [];
-      const bankImages = [];
-      const plans = [];
-  
-      // Upload galleryImages to Cloudinary
-      if (req.files['galleryImages']) {
-        const galleryUploadPromises = req.files['galleryImages'].map(file =>
-          cloudinary.uploader.upload(file.path)
-        );
-        const galleryResults = await Promise.all(galleryUploadPromises);
-        galleryResults.forEach(result => galleryImages.push(result.secure_url));
-      }
-  
-      // Upload bankImages to Cloudinary
-      if (req.files['bankImages']) {
-        const bankUploadPromises = req.files['bankImages'].map(file =>
-          cloudinary.uploader.upload(file.path)
-        );
-        const bankResults = await Promise.all(bankUploadPromises);
-        bankResults.forEach(result => bankImages.push(result.secure_url));
-      }
-  
-      // Upload plans (if applicable)
-      if (req.files['plans']) {
-        const planUploadPromises = req.files['plans'].map(async (file, index) => {
-          const result = await cloudinary.uploader.upload(file.path);
-          return {
-            planType: req.body.planType[index],
-            image: result.secure_url,
-            size: req.body.planSize[index],
-            price: req.body.planPrice[index]
-          };
-        });
-        const planResults = await Promise.all(planUploadPromises);
-        plans.push(...planResults);
-      }
-  
-      const propertyData = {
-        ...req.body,
-        galleryImages,
-        bankImages,
-        plans
-      };
-  
-      const property = new PropertyModel(propertyData);
-      const savedProperty = await property.save();
-      res.status(200).json(savedProperty);
+        // Log the incoming request
+        console.log('Request Body:', req.body);
+        console.log('Uploaded Files:', req.files);
+
+        // Destructure and check if name is present
+        const { name } = req.body;
+        if (!name) {
+            return res.status(400).json({ message: "Property name is required." });
+        }
+
+        const existingProject = await PropertyModel.findOne({ name });
+        if (existingProject) {
+            return res.status(400).json({ message: "Project already exists." });
+        }
+
+        const galleryImages = [];
+        const bankImages = [];
+        const plans = [];
+
+        // Handle gallery images
+        if (req.files['galleryImages']) {
+            const galleryUploadPromises = req.files['galleryImages'].map(file =>
+                cloudinary.uploader.upload(file.path)
+            );
+            const galleryResults = await Promise.all(galleryUploadPromises);
+            galleryResults.forEach(result => galleryImages.push(result.secure_url));
+        }
+
+        // Handle bank images
+        if (req.files['bankImages']) {
+            const bankUploadPromises = req.files['bankImages'].map(file =>
+                cloudinary.uploader.upload(file.path)
+            );
+            const bankResults = await Promise.all(bankUploadPromises);
+            bankResults.forEach(result => bankImages.push(result.secure_url));
+        }
+
+        // Handle plans
+        if (req.files['plans']) {
+            const planUploadPromises = req.files['plans'].map(async (file, index) => {
+                const result = await cloudinary.uploader.upload(file.path);
+                return {
+                    planType: req.body.planType ? req.body.planType[index] : "",
+                    image: result.secure_url,
+                    size: req.body.planSize ? req.body.planSize[index] : "",
+                    price: req.body.planPrice ? req.body.planPrice[index] : ""
+                };
+            });
+            const planResults = await Promise.all(planUploadPromises);
+            plans.push(...planResults);
+        }
+
+        const amenitiesData = JSON.parse(req.body.amenities || '[]');
+        const projectOverviewData  = JSON.parse(req.body.projectOverview || '{}');
+        const priceDetailsData  = JSON.parse(req.body.priceDetails || '[]');
+
+        const propertyData = {
+            ...req.body,
+            amenities: amenitiesData,
+            projectOverview: projectOverviewData,
+            priceDetails: priceDetailsData,
+            galleryImages,
+            bankImages,
+            plans
+        };
+
+        const property = new PropertyModel(propertyData);
+        const savedProperty = await property.save();
+        res.status(200).json(savedProperty);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ message: "Internal Server Error." });
+        console.error(error.message);
+        res.status(500).json({ message: "Internal Server Error." });
     }
-  };
+};
+
   
+
 
 
 
