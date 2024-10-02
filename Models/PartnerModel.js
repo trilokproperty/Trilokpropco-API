@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const partnerSchema = new mongoose.Schema({ 
     name:{ type: String, required: true },
-    images:  { type: String, required: true },
+    image:  { type: String, required: true },
     deleteUrl: { type: String, required: true },
  })
 
