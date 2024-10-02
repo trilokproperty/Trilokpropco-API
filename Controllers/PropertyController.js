@@ -6,8 +6,8 @@ import { cloudinary } from '../utils/cloudinary.js';
 export const addProperty = async (req, res) => {
     try {
         // Log the incoming request
-        console.log('Request Body:', req.body);
-        console.log('Uploaded Files:', req.files);
+        // console.log('Request Body:', req.body.planType, req.body.plans );
+        // console.log('Uploaded Files:', req.files);
 
         // Destructure and check if name is present
         const { name } = req.body;
@@ -42,20 +42,44 @@ export const addProperty = async (req, res) => {
             bankResults.forEach(result => bankImages.push(result.secure_url));
         }
 
-        // Handle plans
-        if (req.files['plans']) {
-            const planUploadPromises = req.files['plans'].map(async (file, index) => {
-                const result = await cloudinary.uploader.upload(file.path);
-                return {
-                    planType: req.body.planType ? req.body.planType[index] : "",
-                    image: result.secure_url,
-                    size: req.body.planSize ? req.body.planSize[index] : "",
-                    price: req.body.planPrice ? req.body.planPrice[index] : ""
-                };
-            });
-            const planResults = await Promise.all(planUploadPromises);
-            plans.push(...planResults);
+       // Handle plans
+// Ensure req.body.plans is parsed correctly if it's a JSON string
+let plansData;
+if (typeof req.body.plans === 'string') {
+    try {
+        plansData = JSON.parse(req.body.plans);
+        console.log("Parsed plansData:", plansData); // Log to verify
+    } catch (error) {
+        console.error("Error parsing plans:", error);
+        plansData = [];
+    }
+} else {
+    plansData = req.body.plans;  // In case it's already an object
+}
+
+// Log the uploaded files
+console.log("req.files['plans']:", req.files['plans']);
+
+// Proceed if plans data exists and files are present
+if (plansData.length > 0 && req.files['plans']) {
+    const planUploadPromises = req.files['plans'].map(async (file, index) => {
+        try {
+            const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+            return {
+                planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
+                image: result.secure_url, // Uploaded image URL
+                size: plansData[index]?.size || "", // Use the size from the parsed plans array
+                price: plansData[index]?.price || "" // Use the price from the parsed plans array
+            };
+        } catch (uploadError) {
+            console.error("Error uploading file:", uploadError);
+            return null;
         }
+    });
+
+    const planResults = await Promise.all(planUploadPromises);
+    plans.push(...planResults.filter(plan => plan !== null)); // Filter out null results due to failed uploads
+}
 
         const amenitiesData = JSON.parse(req.body.amenities || '[]');
         const projectOverviewData  = JSON.parse(req.body.projectOverview || '{}');
@@ -81,27 +105,100 @@ export const addProperty = async (req, res) => {
 };
 
   
-
-
-
-
-
 // update Property
 export const updateProperty = async (req, res) => {
-    const id =req.params.id;
-    try{
-    const findProperty = await PropertyModel.findById(id);
-    if (!findProperty) {
-        return res.status(400).json({ message: "Project not found." });
-    }
-    const propertyData = req.body;
-    const updatedProperty = await PropertyModel.findByIdAndUpdate(id, propertyData, {new: true});
-    res.status(200).json(updatedProperty);
-    } catch (e) {
-        console.log(e.message);
+    const id = req.params.id;
+    try {
+        // Find the existing property by ID
+        const existingProperty = await PropertyModel.findById(id);
+        if (!existingProperty) {
+            return res.status(400).json({ message: "Project not found." });
+        }
+
+        // Arrays to store uploaded image URLs or keep existing data
+        const galleryImages = [...(existingProperty.galleryImages || [])];
+        const bankImages = [...(existingProperty.bankImages || [])];
+        const plans = [...(existingProperty.plans || [])];
+
+        // Handle gallery images (if new ones are uploaded)
+        if (req.files['galleryImages']) {
+            const galleryUploadPromises = req.files['galleryImages'].map(file =>
+                cloudinary.uploader.upload(file.path)
+            );
+            const galleryResults = await Promise.all(galleryUploadPromises);
+            galleryResults.forEach(result => galleryImages.push(result.secure_url));
+        }
+
+        // Handle bank images (if new ones are uploaded)
+        if (req.files['bankImages']) {
+            const bankUploadPromises = req.files['bankImages'].map(file =>
+                cloudinary.uploader.upload(file.path)
+            );
+            const bankResults = await Promise.all(bankUploadPromises);
+            bankResults.forEach(result => bankImages.push(result.secure_url));
+        }
+
+        // Handle plans (if new ones are uploaded)
+        let plansData;
+        if (typeof req.body.plans === 'string') {
+            try {
+                plansData = JSON.parse(req.body.plans);
+            } catch (error) {
+                console.error("Error parsing plans:", error);
+                plansData = [];
+            }
+        } else {
+            plansData = req.body.plans || [];
+        }
+
+        if (plansData.length > 0 && req.files['plans']) {
+            const planUploadPromises = req.files['plans'].map(async (file, index) => {
+                try {
+                    const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+                    return {
+                        planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
+                        image: result.secure_url, // Uploaded image URL
+                        size: plansData[index]?.size || "", // Use the size from the parsed plans array
+                        price: plansData[index]?.price || "" // Use the price from the parsed plans array
+                    };
+                } catch (uploadError) {
+                    console.error("Error uploading plan file:", uploadError);
+                    return null;
+                }
+            });
+
+            const planResults = await Promise.all(planUploadPromises);
+            plans.push(...planResults.filter(plan => plan !== null)); // Append only successful uploads
+        }
+
+        // Parse JSON fields for amenities, projectOverview, priceDetails if provided, or use existing data
+        const amenitiesData = req.body.amenities ? JSON.parse(req.body.amenities) : existingProperty.amenities;
+        const projectOverviewData = req.body.projectOverview ? JSON.parse(req.body.projectOverview) : existingProperty.projectOverview;
+        const priceDetailsData = req.body.priceDetails ? JSON.parse(req.body.priceDetails) : existingProperty.priceDetails;
+
+        // Prepare the updated property data, setting new fields or keeping the existing ones
+        const updatedPropertyData = {
+            ...existingProperty._doc, // Keep all existing fields by default
+            ...req.body, // Overwrite with any new fields from the request body
+            amenities: amenitiesData, // Use either new or existing
+            projectOverview: projectOverviewData, // Use either new or existing
+            priceDetails: priceDetailsData, // Use either new or existing
+            galleryImages, // Updated gallery images (new + existing)
+            bankImages, // Updated bank images (new + existing)
+            plans // Updated plans (new + existing)
+        };
+
+        // Update property with new data
+        const updatedProperty = await PropertyModel.findByIdAndUpdate(id, updatedPropertyData, { new: true });
+
+        // Send the updated property back in the response
+        res.status(200).json(updatedProperty);
+    } catch (error) {
+        console.error(error.message);
         res.status(500).json({ message: "Internal Server Error." });
     }
-}
+};
+
 
 // get properties controller:
 export const getProperty = async (req, res) =>{

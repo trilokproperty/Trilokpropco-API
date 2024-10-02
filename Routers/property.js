@@ -17,7 +17,7 @@ propertyRouter.get('/search', searchProperty);
 
 // POST Property:
 propertyRouter.post(
-  '/',uploadFields, addProperty
+  '/', verifyEditor, uploadFields, addProperty
 );
 
 
@@ -29,7 +29,7 @@ propertyRouter.get('/:id', getSingleProperty)
 // GET single Property by name (changed to a more explicit route):
 propertyRouter.get('/name/:name', getSinglePropertyByName);
 // update Property:
-propertyRouter.put('/:id', verifyEditor, updateProperty)
+propertyRouter.put('/:id', verifyEditor, uploadFields, updateProperty)
 // delete Property:
 propertyRouter.delete('/:id', verifyAdmin, deleteProperty)
 // delete Gallery Image:
