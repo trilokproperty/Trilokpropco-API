@@ -5,6 +5,6 @@ import { upload } from "../MiddleWare/multer.js";
 
 export const partnerRouter = express.Router();
 
-partnerRouter.post('/', verifyEditor, upload.array('images'), addPartner)
+partnerRouter.post('/', verifyEditor, upload.single('image'), addPartner)
 partnerRouter.get('/', getPartners)
 partnerRouter.delete('/:id', verifyAdmin, deletePartner)

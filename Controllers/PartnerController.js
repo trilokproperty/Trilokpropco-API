@@ -10,7 +10,7 @@ export const addPartner = async (req, res) => {
 
         const partner = new PartnerModel({
             name: req.body.name,
-            images: [{ // Store only one image
+            image: [{ // Store only one image
                 url: uploadedImage.secure_url,
                 deleteUrl: uploadedImage ? uploadedImage.public_id : undefined,
             }],
