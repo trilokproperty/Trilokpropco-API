@@ -4,19 +4,16 @@ import { cloudinary } from "../utils/cloudinary.js";
 // Add Partner controller:
 export const addPartner = async (req, res) => {
     try {
-        // Upload image to Cloudinary
-        const imageUploadPromises = req.files.map(file => {
-            return cloudinary.v2.uploader.upload(file.path, { folder: 'partners' });
-        });
+        // Upload single image to Cloudinary
+        const uploadedImage = await cloudinary.uploader.upload(req.file.path);
 
-        const uploadedImages = await Promise.all(imageUploadPromises);
-        
+
         const partner = new PartnerModel({
             name: req.body.name,
-            images: uploadedImages.map(image => ({
-                url: image.secure_url,
-                deleteUrl: image.delete_token, // Use the delete token for later deletion
-            })),
+            images: [{ // Store only one image
+                url: uploadedImage.secure_url,
+                deleteUrl: uploadedImage ? uploadedImage.public_id : undefined,
+            }],
         });
 
         const savedPartner = await partner.save();
@@ -26,6 +23,7 @@ export const addPartner = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error." });
     }
 }
+
 
 // Get Partners controller:
 export const getPartners = async (req, res) => {
