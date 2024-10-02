@@ -4,21 +4,24 @@ import { cloudinary } from "../utils/cloudinary.js";
 // Add Partner controller:
 export const addPartner = async (req, res) => {
     try {
+        let imageResult;
         if (req.file) {
             imageResult = await cloudinary.uploader.upload(req.file.path);
+        } else {
+            return res.status(400).json({ message: "Image is required." });
         }
 
         const partner = new PartnerModel({
             name: req.body.name,
-            image: imageResult ? imageResult.secure_url : undefined,
-            deleteUrl: imageResult ? imageResult.public_id : undefined,
+            image: imageResult.secure_url,
+            deleteUrl: imageResult.public_id,
         });
 
         const savedPartner = await partner.save();
         res.status(200).json(savedPartner);
     } catch (e) {
-        console.log(e.message);
-        res.status(500).json({ message: "Internal Server Error." });
+        console.error("Error in addPartner:", e); // Log the full error
+        res.status(500).json({ message: "Internal Server Error.", error: e.message });
     }
 }
 
