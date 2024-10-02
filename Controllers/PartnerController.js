@@ -1,5 +1,5 @@
 import { PartnerModel } from "../Models/PartnerModel.js";
-import cloudinary from '../config/cloudinary.js'; // Import the Cloudinary config
+import { cloudinary } from "../utils/cloudinary.js";
 
 // Add Partner controller:
 export const addPartner = async (req, res) => {
