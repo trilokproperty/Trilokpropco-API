@@ -4,16 +4,14 @@ import { cloudinary } from "../utils/cloudinary.js";
 // Add Partner controller:
 export const addPartner = async (req, res) => {
     try {
-        // Upload single image to Cloudinary
-        const uploadedImage = await cloudinary.uploader.upload(req.file.path);
-
+        if (req.file) {
+            imageResult = await cloudinary.uploader.upload(req.file.path);
+        }
 
         const partner = new PartnerModel({
             name: req.body.name,
-            image: [{ // Store only one image
-                url: uploadedImage.secure_url,
-                deleteUrl: uploadedImage ? uploadedImage.public_id : undefined,
-            }],
+            image: imageResult ? imageResult.secure_url : undefined,
+            deleteUrl: imageResult ? imageResult.public_id : undefined,
         });
 
         const savedPartner = await partner.save();
@@ -44,10 +42,9 @@ export const deletePartner = async (req, res) => {
         if (!partner) {
             return res.status(404).json({ message: 'Partner not found' });
         }
-        
         // Delete image from Cloudinary
-        for (const image of partner.images) {
-            await cloudinary.v2.uploader.destroy(image.deleteUrl);
+        if (partner.deleteUrl) {
+            await cloudinary.uploader.destroy(partner.deleteUrl);
         }
 
         // Delete partner from database
