@@ -245,6 +245,29 @@ export const getSinglePropertyByName = async (req, res) => {
     }
 };
 
+// delete plans controller: 
+export const deletePlan = async (req, res) => {
+    try {
+        const { id } = req.params; // Property ID
+        const { planIds } = req.body; // Array of plan IDs to delete
+
+        const property = await PropertyModel.findById(id);
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+
+        // Filter out the plans to be deleted
+        property.plans = property.plans.filter(plan => !planIds.includes(plan._id.toString()));
+
+        await property.save();
+
+        return res.status(200).json({ message: 'Plan(s) deleted successfully', property });
+    } catch (error) {
+        console.error('Error deleting plan:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // delete Property controller:
 export const deleteProperty = async(req, res) =>{
     const id = req.params.id;
