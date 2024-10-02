@@ -24,11 +24,12 @@ const app = express();
 const PORT = 5000;
 dotenv.config()
 
-const corsConfig ={
-    origin:'admin.trilokpropco.com',
-    Credential:true,
+const corsConfig = {
+    origin: 'https://admin.trilokpropco.com',  // Include the protocol
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-}
+};
+
 app.options("", cors(corsConfig))
 app.use(cors(corsConfig))
 app.use(express.json())
