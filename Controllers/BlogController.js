@@ -42,9 +42,9 @@ export const getBlogs = async (req, res) => {
 
 // get Single Blog controller:
 export const getSingleBlog = async (req, res) => {
-    const id = req.params.id;
+    const title = req.params.title;
     try {
-        const blog = await blogModel.findById(id);
+        const blog = await blogModel.findOne({ title: title });
         if (!blog) {
             return res.status(404).json({ message: "Blog not found." });
         }
