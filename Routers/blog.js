@@ -7,6 +7,6 @@ export const blogRouter = express.Router();
 
 blogRouter.post('/', verifyEditor, upload.single('image'), addBlog)
 blogRouter.get('/', getBlogs)
-blogRouter.get('/:id', getSingleBlog)
+blogRouter.get('/:title', getSingleBlog)
 blogRouter.put('/:id', verifyEditor, upload.single('image'), updateBlog)
 blogRouter.delete('/:id', verifyAdmin, deleteBlog)
