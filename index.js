@@ -25,7 +25,7 @@ const PORT = 5000;
 dotenv.config()
 
 const corsConfig = {
-    origin: 'https://admin.trilokpropco.com',  // Include the protocol
+    origin: ['https://trilokpropco.com', 'https://www.trilokpropco.com','https://admin.trilokpropco.com'],  // Include the protocol
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 };
@@ -51,11 +51,13 @@ app.use('/api/inquire', formRouter);
 app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
 
-const dbName = "trilokpropertyconsultant"
+//const dbName = "trilokpropertyconsultant"
+const dbName = process.env.DBNAME
+const dbHost = process.env.DBHOST
 const dbUser = process.env.DBUSER
 const dbPassword = process.env.DBPASS
 try{
-  await mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.vvmocfe.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=Cluster0`)
+  await mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@${dbHost}/${dbName}?retryWrites=true&w=majority&appName=Cluster0`)
   console.log("DataBase Connected")
 }
 catch (e){
