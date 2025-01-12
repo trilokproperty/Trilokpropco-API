@@ -25,22 +25,29 @@ export const addProperty = async (req, res) => {
         const plans = [];
 
         // Handle gallery images
-        if (req.files['galleryImages']) {
-            const galleryUploadPromises = req.files['galleryImages'].map(file =>
-                cloudinary.uploader.upload(file.path)
-            );
-            const galleryResults = await Promise.all(galleryUploadPromises);
-            galleryResults.forEach(result => galleryImages.push(result.secure_url));
-        }
+       if (req.files['galleryImages']) {
+    const galleryUploadPromises = req.files['galleryImages'].map(file =>
+        cloudinary.uploader.upload(file.path, {
+            public_id: `gallery/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            folder: 'gallery' // Organize uploads into a folder
+        })
+    );
+    const galleryResults = await Promise.all(galleryUploadPromises);
+    galleryResults.forEach(result => galleryImages.push(result.secure_url));
+}
 
-        // Handle bank images
-        if (req.files['bankImages']) {
-            const bankUploadPromises = req.files['bankImages'].map(file =>
-                cloudinary.uploader.upload(file.path)
-            );
-            const bankResults = await Promise.all(bankUploadPromises);
-            bankResults.forEach(result => bankImages.push(result.secure_url));
-        }
+// Handle bank images
+if (req.files['bankImages']) {
+    const bankUploadPromises = req.files['bankImages'].map(file =>
+        cloudinary.uploader.upload(file.path, {
+            public_id: `bank/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            folder: 'bank' // Organize uploads into a folder
+        })
+    );
+    const bankResults = await Promise.all(bankUploadPromises);
+    bankResults.forEach(result => bankImages.push(result.secure_url));
+}
+
 
        // Handle plans
 // Ensure req.body.plans is parsed correctly if it's a JSON string
