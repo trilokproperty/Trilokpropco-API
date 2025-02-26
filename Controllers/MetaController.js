@@ -7,6 +7,7 @@ export const addMeta = async (req, res) => {
     try {
         const imageResult = await cloudinary.uploader.upload(req.file.path);
         const metaData = {
+            slug: req.body.slug,
             metaTitle: req.body.metaTitle,
             FeaturedImage: imageResult.secure_url,
             metaDescription: req.body.metaDescription,
@@ -32,6 +33,7 @@ export const updateMeta = async (req, res) => {
         }
 
         let updatedData = {
+            // slug: meta.metaTitle,
             metaTitle: req.body.metaTitle || meta.metaTitle,
             metaDescription: req.body.metaDescription || meta.metaDescription,
         };
@@ -55,6 +57,16 @@ export const updateMeta = async (req, res) => {
 export const getAllMeta = async (req, res) => {
     try {
         const metaList = await MetaModel.find();
+        res.status(200).json(metaList);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+};
+
+export const getMetaByPage = async (req, res) => {
+    try {
+        const metaList = await MetaModel.findOne({ slug: req.params.slug });
         res.status(200).json(metaList);
     } catch (e) {
         console.log(e.message);
