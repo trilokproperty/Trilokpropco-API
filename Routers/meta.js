@@ -1,6 +1,6 @@
 import express from "express";
 import { upload } from "../MiddleWare/multer.js";
-import { addMeta, getAllMeta, updateMeta } from "../Controllers/MetaController.js";
+import { addMeta, getAllMeta, getMetaByPage, updateMeta } from "../Controllers/MetaController.js";
 import { verifyEditor } from "../MiddleWare/jwt.js";
 
 
@@ -12,5 +12,6 @@ metaRouter.post("/add", verifyEditor, upload.single("FeaturedImage"), addMeta);
 // Route to update footer meta by ID
 metaRouter.put("/update/:id", verifyEditor, upload.single("FeaturedImage"), updateMeta);
 
+metaRouter.get("/slug/:slug", getMetaByPage);
 // Route to get all footer meta
 metaRouter.get("/", getAllMeta);
