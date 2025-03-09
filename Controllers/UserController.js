@@ -20,7 +20,7 @@ export const signup = async (req, res) => {
   const newUser = new UserModel({ email, password: hashedPassword, role });
   await newUser.save();
 
-  console.log('JWT_TOKEN:', process.env.JWT_TOKEN);
+  // console.log('JWT_TOKEN:', process.env.JWT_TOKEN);
 
   const token = jwt.sign(
     { _id: newUser._id, role: newUser.role },
@@ -48,7 +48,7 @@ export const login = async (req, res) => {
      return res.status(404).json({ error: "Invalid password" });
    }
    
-  console.log('JWT_TOKEN_login:', process.env.JWT_TOKEN);
+  // console.log('JWT_TOKEN_login:', process.env.JWT_TOKEN);
    //  JWT
    const token = jwt.sign(
      { email: user.email, id: user._id, role: user.role },
@@ -62,7 +62,7 @@ export const login = async (req, res) => {
 export const getCurrentUser = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.decoded.id || req.decoded.userId);
-    console.log("user", req.decoded)
+    // console.log("user", req.decoded)
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

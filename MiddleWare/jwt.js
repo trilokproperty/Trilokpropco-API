@@ -10,8 +10,8 @@ export const verifyToken = (req, res, next) => {
         }
 
         const token = authHeader.split(" ")[1];
-        console.log('Token received:', token);
-        console.log('JWT Secret:', process.env.JWT_TOKEN);
+        // console.log('Token received:', token);
+        // console.log('JWT Secret:', process.env.JWT_TOKEN);
 
         if (!token) {
             return res.status(401).json({ error: "Unauthorized: Token missing" });
