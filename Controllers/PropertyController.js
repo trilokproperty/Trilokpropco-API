@@ -116,6 +116,9 @@ if (plansData.length > 0 && req.files['plans']) {
 export const updateProperty = async (req, res) => {
     const id = req.params.id;
     try {
+        
+        // console.log('Uploaded Files:', req.files);
+        // return;
         // Find the existing property by ID
         const existingProperty = await PropertyModel.findById(id);
         if (!existingProperty) {
@@ -220,7 +223,7 @@ export const getProperty = async (req, res) =>{
       const propeties = await PropertyModel.find();
       res.status(200).json(propeties)
     }catch (e) {
-        console.log(e.message);
+        // console.log(e.message);
         res.status(500).json({ message: "Internal Server Error."});
 
 }}
@@ -235,7 +238,7 @@ export const getSingleProperty = async (req, res) =>{
       }
       res.status(200).json(property)
     }catch (e) {
-        console.log(e.message);
+        // console.log(e.message);
         res.status(500).json({ message: "Internal Server Error."});
 
 }}
@@ -243,7 +246,7 @@ export const getSingleProperty = async (req, res) =>{
 // get property controller with property name:
 export const getSinglePropertyByName = async (req, res) => {
     const name = req.params.name;
-    console.log(name)
+    // console.log(name)
     try {
         // Case-insensitive and removing unnecessary spaces
         const property = await PropertyModel.findOne({ name: name });
@@ -254,7 +257,7 @@ export const getSinglePropertyByName = async (req, res) => {
         
         res.status(200).json(property);
     } catch (error) {
-        console.log(error.message);
+        // console.log(error.message);
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
@@ -293,7 +296,7 @@ export const deleteProperty = async(req, res) =>{
         await PropertyModel.findByIdAndDelete(id);
         res.status(200).json({ message: "Property successfully deleted."})
     } catch (e) {
-        console.log(e.message);
+        // console.log(e.message);
         res.status(500).json({ message: "Internal Server Error."});
     }
 }
@@ -323,7 +326,7 @@ export const deleteGalleryImage = async (req, res) => {
         const updatedProperty = await property.save();
         res.status(200).json({ message: "Image successfully deleted.", updatedProperty });
     } catch (e) {
-        console.log(e.message);
+        // console.log(e.message);
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
@@ -353,7 +356,7 @@ export const deleteBankImage = async (req, res) => {
         const updatedProperty = await property.save();
         res.status(200).json({ message: "Image successfully deleted.", updatedProperty });
     } catch (e) {
-        console.log(e.message);
+        // console.log(e.message);
         res.status(500).json({ message: "Internal Server Error." });
     }
 };
