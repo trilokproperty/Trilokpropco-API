@@ -19,6 +19,8 @@ import { whyRouter } from "./Routers/why.js";
 import { servicesRouter } from "./Routers/services.js";
 import { userRouter } from "./Routers/user.js";
 import { metaRouter } from "./Routers/meta.js";
+const prerender = require('prerender-node');
+
 
 const app = express();
 const PORT = 5000;
@@ -50,6 +52,14 @@ app.use('/api/service', servicesRouter);
 app.use('/api/inquire', formRouter);
 app.use('/api/user', userRouter);
 app.use('/api/meta', metaRouter);
+
+
+app.use(prerender.set('prerenderToken', 'RtOYjmL0QlhrCoIyrjBt'));
+
+// Serve your React app
+app.use(express.static('build'));
+
+
 
 //const dbName = "trilokpropertyconsultant"
 const dbName = process.env.DBNAME
