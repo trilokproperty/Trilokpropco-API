@@ -19,7 +19,7 @@ import { whyRouter } from "./Routers/why.js";
 import { servicesRouter } from "./Routers/services.js";
 import { userRouter } from "./Routers/user.js";
 import { metaRouter } from "./Routers/meta.js";
-const prerender = require('prerender-node');
+import prerender from 'prerender-node';
 
 
 const app = express();
