@@ -1,11 +1,18 @@
 
 import { MetaModel } from "../Models/MetaData.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // Add Footer controller
 export const addMeta = async (req, res) => {
     try {
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //await cloudinary.uploader.upload(req.file.path);
         const metaData = {
             slug: req.body.slug,
             metaTitle: req.body.metaTitle,
@@ -40,7 +47,13 @@ export const updateMeta = async (req, res) => {
 
         // If a new image is uploaded, update the image
         if (req.file) {
-            const imageResult = await cloudinary.uploader.upload(req.file.path);
+            const originalName = path.parse(req.file.originalname).name;
+
+            const imageResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
+            //await cloudinary.uploader.upload(req.file.path);
             updatedData.FeaturedImage = imageResult.secure_url;
         }
 

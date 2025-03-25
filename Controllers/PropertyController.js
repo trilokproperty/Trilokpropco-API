@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { PropertyModel } from "../Models/PropertiesModel.js";
 import { cloudinary } from '../utils/cloudinary.js';
+import path from "path";
 
 
 export const addProperty = async (req, res) => {
@@ -71,7 +72,13 @@ console.log("req.files['plans']:", req.files['plans']);
 if (plansData.length > 0 && req.files['plans']) {
     const planUploadPromises = req.files['plans'].map(async (file, index) => {
         try {
-            const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+            const originalName = path.parse(req.file.originalname).name;
+
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
+            //await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
             return {
                 planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
                 image: result.secure_url, // Uploaded image URL
@@ -171,7 +178,13 @@ if (req.files['bankImages']) {
         if (plansData.length > 0 && req.files['plans']) {
             const planUploadPromises = req.files['plans'].map(async (file, index) => {
                 try {
-                    const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+                    const originalName = path.parse(req.file.originalname).name;
+
+                    const result = await cloudinary.uploader.upload(req.file.path, {
+                        public_id: originalName, // Use the same filename
+                        overwrite: true // Ensure it replaces any existing file with the same name
+                    });
+                    //await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
                     return {
                         planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
                         image: result.secure_url, // Uploaded image URL

@@ -1,10 +1,16 @@
 import { TestimonialModel } from "../Models/TestimonialModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // Add testimonial controller
 export const addTestimonial = async(req, res) =>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //= await cloudinary.uploader.upload(req.file.path);
         const testimonial = new TestimonialModel({
             name: req.body.name, 
             des: req.body.des, 

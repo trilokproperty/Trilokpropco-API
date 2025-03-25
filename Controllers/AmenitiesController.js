@@ -1,10 +1,19 @@
 import { AmenitiesModel } from "../Models/AmenitiesModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // add Amenities controller:
 export const addAmenities = async(req, res)=>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        // const imageResult = await cloudinary.uploader.upload(req.file.path);
+        
+        const originalName = path.parse(req.file.originalname).name;
+
+        // Upload the new image
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
         const amenities = new AmenitiesModel({
             name: req.body.name, 
             logo:imageResult.secure_url,

@@ -1,10 +1,16 @@
 import { DeveloperModel } from "../Models/DeveloperModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // add Developers controller:
 export const addDeveloper = async(req, res)=>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //= await cloudinary.uploader.upload(req.file.path);
         const developer = new DeveloperModel({name: req.body.name, details: req.body.details, image:imageResult.secure_url,
             imagePublicId: imageResult.public_id})
         const savedDeveloper = await developer.save();

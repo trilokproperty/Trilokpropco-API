@@ -1,9 +1,18 @@
 import { AboutModel } from "../Models/AboutMode.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 export const addAbout = async (req, res) => {
     try {
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        // const imageResult = await cloudinary.uploader.upload(req.file.path);
+        
+        const originalName = path.parse(req.file.originalname).name;
+
+        // Upload the new image
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
         const aboutData = {
             history: req.body.history,
             mission: req.body.mission,
@@ -55,9 +64,13 @@ export const updateAbout = async (req, res) => {
         if (req.file) {
             // Delete the old image from cloudinary
             await cloudinary.uploader.destroy(existingAbout.imagePublicId);
-            
+            const originalName = path.parse(req.file.originalname).name;
+
             // Upload the new image
-            const imageResult = await cloudinary.uploader.upload(req.file.path);
+            const imageResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
             updatedData.founderLogo = imageResult.secure_url;
         } else {
             updatedData.imagePublicId = existingAbout.imagePublicId;
