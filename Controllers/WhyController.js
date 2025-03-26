@@ -1,9 +1,15 @@
 import { WhyModel } from "../Models/WhyModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 export const addWhy = async (req, res) => {
     try {
-        const logoResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+        const logoResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //= await cloudinary.uploader.upload(req.file.path);
         const whyData = {
             title: req.body.title,
             description: req.body.description,
@@ -42,7 +48,12 @@ export const updateWhy = async (req, res) => {
         };
 
         if (req.file) {
-            const logoResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+        const logoResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
+            //await cloudinary.uploader.upload(req.file.path);
             updatedData.logo = logoResult.secure_url;
         } else {
             updatedData.logo = existingWhy.logo;

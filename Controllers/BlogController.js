@@ -1,14 +1,20 @@
 import { blogModel } from "../Models/BlogModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // add Blog controller:
 export const addBlog = async (req, res) => {
-    console.log('Request Body:', req.body);
+    // console.log('Request Body:', req.body);
     try {
         let imageResult;
-        console.log(req.file)
+        const originalName = path.parse(req.file.originalname).name;
+        // console.log(req.file)
         if (req.file) {
-            imageResult = await cloudinary.uploader.upload(req.file.path);
+            // imageResult = await cloudinary.uploader.upload(req.file.path);
+            imageResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
         }
         const allFields = {
             category: req.body.category,
@@ -58,7 +64,7 @@ export const getSingleBlog = async (req, res) => {
 // update Blog
 export const updateBlog = async (req, res) => {
     const id = req.params.id;
-    console.log('Request Body:', req.body); 
+    // console.log('Request Body:', req.body); 
     try {
         const blog = await blogModel.findById(id);
         if (!blog) {
@@ -66,10 +72,15 @@ export const updateBlog = async (req, res) => {
         }
 
         let imageResult;
-        console.log(req.file)
+        const originalName = path.parse(req.file.originalname).name;
+        // console.log(req.file)
         if (req.file) {
             // Upload new image if present
-            imageResult = await cloudinary.uploader.upload(req.file.path);
+            // imageResult = await cloudinary.uploader.upload(req.file.path);
+            imageResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
             // Delete old image from Cloudinary
             if (blog.imagePublicId) {
                 await cloudinary.uploader.destroy(blog.imagePublicId);

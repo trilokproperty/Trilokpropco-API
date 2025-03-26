@@ -1,10 +1,17 @@
 import { StatusModel } from "../Models/StatusModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // add status controller:
 export const addStatus = async(req, res)=>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //await cloudinary.uploader.upload(req.file.path);
         const status = new StatusModel({
             status: req.body.status, 
             image:imageResult.secure_url,

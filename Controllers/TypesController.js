@@ -1,5 +1,6 @@
 import { TypesModel } from "../Models/TypesModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // add Types controller:
 export const addType = async(req, res)=>{
@@ -10,7 +11,13 @@ export const addType = async(req, res)=>{
         if (!existingProject) {
             return res.status(400).json({ message: "Type already exists." });
         }
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const originalName = path.parse(req.file.originalname).name;
+
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: originalName, // Use the same filename
+            overwrite: true // Ensure it replaces any existing file with the same name
+        });
+        //await cloudinary.uploader.upload(req.file.path);
         const type = new TypesModel({
             type: req.body.type, 
             logo:imageResult.secure_url,

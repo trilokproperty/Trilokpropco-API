@@ -1,12 +1,19 @@
 import { PartnerModel } from "../Models/PartnerModel.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 // Add Partner controller:
 export const addPartner = async (req, res) => {
     try {
         let imageResult;
         if (req.file) {
-            imageResult = await cloudinary.uploader.upload(req.file.path);
+            const originalName = path.parse(req.file.originalname).name;
+
+            imageResult = await cloudinary.uploader.upload(req.file.path, {
+                public_id: originalName, // Use the same filename
+                overwrite: true // Ensure it replaces any existing file with the same name
+            });
+            //await cloudinary.uploader.upload(req.file.path);
         } else {
             return res.status(400).json({ message: "Image is required." });
         }
