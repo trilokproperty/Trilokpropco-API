@@ -26,71 +26,79 @@ export const addProperty = async (req, res) => {
 
         // Handle gallery images
        if (req.files['galleryImages']) {
-    const galleryUploadPromises = req.files['galleryImages'].map(file =>
-        cloudinary.uploader.upload(file.path, {
-            public_id: `gallery/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
-            folder: 'gallery' // Organize uploads into a folder
-        })
-    );
-    const galleryResults = await Promise.all(galleryUploadPromises);
-    galleryResults.forEach(result => galleryImages.push(result.secure_url));
-}
+            const galleryUploadPromises = req.files['galleryImages'].map(file =>
+                cloudinary.uploader.upload(file.path, {
+                    public_id: `gallery/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                    folder: 'gallery' // Organize uploads into a folder
+                })
+            );
+            const galleryResults = await Promise.all(galleryUploadPromises);
+            galleryResults.forEach(result => galleryImages.push(result.secure_url));
+            console.log('gallery worked',galleryResults);
+            
+        }
 
-// Handle bank images
-if (req.files['bankImages']) {
-    const bankUploadPromises = req.files['bankImages'].map(file =>
-        cloudinary.uploader.upload(file.path, {
-            public_id: `bank/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
-            folder: 'bank' // Organize uploads into a folder
-        })
-    );
-    const bankResults = await Promise.all(bankUploadPromises);
-    bankResults.forEach(result => bankImages.push(result.secure_url));
-}
+    // Handle bank images
+    if (req.files['bankImages']) {
+        const bankUploadPromises = req.files['bankImages'].map(file =>
+            cloudinary.uploader.upload(file.path, {
+                public_id: `bank/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                folder: 'bank' // Organize uploads into a folder
+            })
+        );
+        const bankResults = await Promise.all(bankUploadPromises);
+        bankResults.forEach(result => bankImages.push(result.secure_url));
+        console.log('bank worked',bankResults);
+    }
 
 
        // Handle plans
-// Ensure req.body.plans is parsed correctly if it's a JSON string
-let plansData;
-if (typeof req.body.plans === 'string') {
-    try {
-        plansData = JSON.parse(req.body.plans);
-        console.log("Parsed plansData:", plansData); // Log to verify
-    } catch (error) {
-        console.error("Error parsing plans:", error);
-        plansData = [];
-    }
-} else {
-    plansData = req.body.plans;  // In case it's already an object
-}
-
-// Log the uploaded files
-console.log("req.files['plans']:", req.files['plans']);
-
-// Proceed if plans data exists and files are present
-if (plansData.length > 0 && req.files['plans']) {
-    const planUploadPromises = req.files['plans'].map(async (file, index) => {
+    // Ensure req.body.plans is parsed correctly if it's a JSON string
+    let plansData;
+    if (typeof req.body.plans === 'string') {
         try {
-            const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
-            return {
-                planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
-                image: result.secure_url, // Uploaded image URL
-                size: plansData[index]?.size || "", // Use the size from the parsed plans array
-                price: plansData[index]?.price || "" // Use the price from the parsed plans array
-            };
-        } catch (uploadError) {
-            console.error("Error uploading file:", uploadError);
-            return null;
+            plansData = JSON.parse(req.body.plans);
+            console.log("Parsed plansData:", plansData); // Log to verify
+        } catch (error) {
+            console.error("Error parsing plans:", error);
+            plansData = [];
         }
-    });
+    } else {
+        plansData = req.body.plans;  // In case it's already an object
+    }
+        console.log('plan worked',plansData);
 
-    const planResults = await Promise.all(planUploadPromises);
-    plans.push(...planResults.filter(plan => plan !== null)); // Filter out null results due to failed uploads
-}
+    // Log the uploaded files
+    // console.log("req.files['plans']:", req.files['plans']);
+
+    // Proceed if plans data exists and files are present
+    if (plansData.length > 0 && req.files['plans']) {
+        const planUploadPromises = req.files['plans'].map(async (file, index) => {
+            try {
+                const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+                return {
+                    planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
+                    image: result.secure_url, // Uploaded image URL
+                    size: plansData[index]?.size || "", // Use the size from the parsed plans array
+                    price: plansData[index]?.price || "" // Use the price from the parsed plans array
+                };
+            } catch (uploadError) {
+                console.error("Error uploading file:", uploadError);
+                return null;
+            }
+        });
+
+        const planResults = await Promise.all(planUploadPromises);
+        plans.push(...planResults.filter(plan => plan !== null)); // Filter out null results due to failed uploads
+        console.log('plan images worked',plans);
+    }
 
         const amenitiesData = JSON.parse(req.body.amenities || '[]');
         const projectOverviewData  = JSON.parse(req.body.projectOverview || '{}');
         const priceDetailsData  = JSON.parse(req.body.priceDetails || '[]');
+        console.log('am worked',amenitiesData);
+        console.log('pr over worked',projectOverviewData);
+        console.log('price worked',priceDetailsData);
 
         const propertyData = {
             ...req.body,
@@ -101,9 +109,12 @@ if (plansData.length > 0 && req.files['plans']) {
             bankImages,
             plans
         };
+        console.log('pr data',propertyData);
 
         const property = new PropertyModel(propertyData);
+        console.log('pr data passs',property);
         const savedProperty = await property.save();
+        console.log('pr data save',savedProperty);
         res.status(200).json(savedProperty);
     } catch (error) {
         console.error(error.message);
