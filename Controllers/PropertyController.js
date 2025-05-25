@@ -34,7 +34,7 @@ export const addProperty = async (req, res) => {
             );
             const galleryResults = await Promise.all(galleryUploadPromises);
             galleryResults.forEach(result => galleryImages.push(result.secure_url));
-            console.log('gallery worked',galleryResults);
+            // console.log('gallery worked',galleryResults);
             
         }
 
@@ -48,7 +48,7 @@ export const addProperty = async (req, res) => {
         );
         const bankResults = await Promise.all(bankUploadPromises);
         bankResults.forEach(result => bankImages.push(result.secure_url));
-        console.log('bank worked',bankResults);
+        // console.log('bank worked',bankResults);
     }
 
 
@@ -66,7 +66,7 @@ export const addProperty = async (req, res) => {
     } else {
         plansData = req.body.plans;  // In case it's already an object
     }
-        console.log('plan worked',plansData);
+        // console.log('plan worked',plansData);
 
     // Log the uploaded files
     // console.log("req.files['plans']:", req.files['plans']);
@@ -90,15 +90,15 @@ export const addProperty = async (req, res) => {
 
         const planResults = await Promise.all(planUploadPromises);
         plans.push(...planResults.filter(plan => plan !== null)); // Filter out null results due to failed uploads
-        console.log('plan images worked',plans);
+        // console.log('plan images worked',plans);
     }
 
         const amenitiesData = JSON.parse(req.body.amenities || '[]');
         const projectOverviewData  = JSON.parse(req.body.projectOverview || '{}');
         const priceDetailsData  = JSON.parse(req.body.priceDetails || '[]');
-        console.log('am worked',amenitiesData);
-        console.log('pr over worked',projectOverviewData);
-        console.log('price worked',priceDetailsData);
+        // console.log('am worked',amenitiesData);
+        // console.log('pr over worked',projectOverviewData);
+        // console.log('price worked',priceDetailsData);
 
         const propertyData = {
             ...req.body,
@@ -109,12 +109,12 @@ export const addProperty = async (req, res) => {
             bankImages,
             plans
         };
-        console.log('pr data',propertyData);
+        // console.log('pr data',propertyData);
 
         const property = new PropertyModel(propertyData);
-        console.log('pr data passs',property);
+        // console.log('pr data passs',property);
         const savedProperty = await property.save();
-        console.log('pr data save',savedProperty);
+        // console.log('pr data save',savedProperty);
         res.status(200).json(savedProperty);
     } catch (error) {
         console.error(error.message);
