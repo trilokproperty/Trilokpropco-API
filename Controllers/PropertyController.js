@@ -213,11 +213,22 @@ if (req.files['bankImages']) {
         const amenitiesData = req.body.amenities ? JSON.parse(req.body.amenities) : existingProperty.amenities;
         const projectOverviewData = req.body.projectOverview ? JSON.parse(req.body.projectOverview) : existingProperty.projectOverview;
         const priceDetailsData = req.body.priceDetails ? JSON.parse(req.body.priceDetails) : existingProperty.priceDetails;
+        const sanitizeObjectId = (value) => (value && value.trim() !== "" ? value : null);
+
+        const {
+        type,
+        status,
+        developer,
+        ...restBody
+        } = req.body;
 
         // Prepare the updated property data, setting new fields or keeping the existing ones
         const updatedPropertyData = {
             ...existingProperty._doc, // Keep all existing fields by default
-            ...req.body, // Overwrite with any new fields from the request body
+            ...restBody,
+            type: sanitizeObjectId(type),
+            status: sanitizeObjectId(status),
+            developer: sanitizeObjectId(developer),           
             amenities: amenitiesData, // Use either new or existing
             projectOverview: projectOverviewData, // Use either new or existing
             priceDetails: priceDetailsData, // Use either new or existing
