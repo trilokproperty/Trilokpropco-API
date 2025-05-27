@@ -7,7 +7,8 @@ const propertySchema = new mongoose.Schema({
     metaDescription:{ type: String },
     type: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Types'
+        ref: 'Types',
+        default: null
     },
     developer: {type: mongoose.Schema.Types.ObjectId, ref: 'Developer' },
     location: {
@@ -16,7 +17,8 @@ const propertySchema = new mongoose.Schema({
   },
     status: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Status'
+        ref: 'Status',
+        default: null
     },
     priceRange: { type: String, required: true },
     category: { type: String, required: true },
@@ -58,7 +60,7 @@ const propertySchema = new mongoose.Schema({
     }],
     nearbyFacilities: { type: String},
     locationMap: { type: String},
-    specifications: { type: String, required: true },
+    specifications: { type: String, required: false, default: null },
     video: { type: String, required: true },
     for: { type: String, required: true },
     isFeatured: { type: Boolean, default: false },

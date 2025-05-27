@@ -19,7 +19,7 @@ export const addProperty = async (req, res) => {
         if (existingProject) {
             return res.status(400).json({ message: "Project already exists." });
         }
-
+        
         const galleryImages = [];
         const bankImages = [];
         const plans = [];
@@ -99,9 +99,21 @@ export const addProperty = async (req, res) => {
         // console.log('am worked',amenitiesData);
         // console.log('pr over worked',projectOverviewData);
         // console.log('price worked',priceDetailsData);
+        const sanitizeObjectId = (value) => (value && value.trim() !== "" ? value : null);
+
+        const {
+        type,
+        status,
+        developer,
+        specifications,
+        ...restBody
+        } = req.body;
 
         const propertyData = {
-            ...req.body,
+              ...restBody,
+            type: sanitizeObjectId(type),
+            status: sanitizeObjectId(status),
+            developer: sanitizeObjectId(developer),
             amenities: amenitiesData,
             projectOverview: projectOverviewData,
             priceDetails: priceDetailsData,
@@ -109,7 +121,8 @@ export const addProperty = async (req, res) => {
             bankImages,
             plans
         };
-        // console.log('pr data',propertyData);
+        
+        console.log('pr data',propertyData);
 
         const property = new PropertyModel(propertyData);
         // console.log('pr data passs',property);

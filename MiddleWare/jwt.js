@@ -46,7 +46,7 @@ export const verifyAdmin = (req, res, next) => {
 // Verify Editor Middleware
 export const verifyEditor = (req, res, next) => {
   verifyToken(req, res, () => {
-    console.log(req.decoded.role)
+    // console.log(req.decoded.role)
     if (req.decoded.role === 'editor' || req.decoded.role === 'admin') { // Use req.decoded instead of req.user
       next();
     } else {
