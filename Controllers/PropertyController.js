@@ -122,7 +122,7 @@ export const addProperty = async (req, res) => {
             plans
         };
         
-        console.log('pr data',propertyData);
+        // console.log('pr data',propertyData);
 
         const property = new PropertyModel(propertyData);
         // console.log('pr data passs',property);
