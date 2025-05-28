@@ -58,7 +58,7 @@ export const addProperty = async (req, res) => {
     if (typeof req.body.plans === 'string') {
         try {
             plansData = JSON.parse(req.body.plans);
-            console.log("Parsed plansData:", plansData); // Log to verify
+            // console.log("Parsed plansData:", plansData); // Log to verify
         } catch (error) {
             console.error("Error parsing plans:", error);
             plansData = [];
