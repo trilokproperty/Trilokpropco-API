@@ -19,7 +19,7 @@ export const addProperty = async (req, res) => {
         if (existingProject) {
             return res.status(400).json({ message: "Project already exists." });
         }
-
+        
         const galleryImages = [];
         const bankImages = [];
         const plans = [];
@@ -58,7 +58,7 @@ export const addProperty = async (req, res) => {
     if (typeof req.body.plans === 'string') {
         try {
             plansData = JSON.parse(req.body.plans);
-            console.log("Parsed plansData:", plansData); // Log to verify
+            // console.log("Parsed plansData:", plansData); // Log to verify
         } catch (error) {
             console.error("Error parsing plans:", error);
             plansData = [];
@@ -99,9 +99,21 @@ export const addProperty = async (req, res) => {
         // console.log('am worked',amenitiesData);
         // console.log('pr over worked',projectOverviewData);
         // console.log('price worked',priceDetailsData);
+        const sanitizeObjectId = (value) => (value && value.trim() !== "" ? value : null);
+
+        const {
+        type,
+        status,
+        developer,
+        specifications,
+        ...restBody
+        } = req.body;
 
         const propertyData = {
-            ...req.body,
+              ...restBody,
+            type: sanitizeObjectId(type),
+            status: sanitizeObjectId(status),
+            developer: sanitizeObjectId(developer),
             amenities: amenitiesData,
             projectOverview: projectOverviewData,
             priceDetails: priceDetailsData,
@@ -109,6 +121,7 @@ export const addProperty = async (req, res) => {
             bankImages,
             plans
         };
+        
         // console.log('pr data',propertyData);
 
         const property = new PropertyModel(propertyData);
@@ -200,11 +213,22 @@ if (req.files['bankImages']) {
         const amenitiesData = req.body.amenities ? JSON.parse(req.body.amenities) : existingProperty.amenities;
         const projectOverviewData = req.body.projectOverview ? JSON.parse(req.body.projectOverview) : existingProperty.projectOverview;
         const priceDetailsData = req.body.priceDetails ? JSON.parse(req.body.priceDetails) : existingProperty.priceDetails;
+        const sanitizeObjectId = (value) => (value && value.trim() !== "" ? value : null);
+
+        const {
+        type,
+        status,
+        developer,
+        ...restBody
+        } = req.body;
 
         // Prepare the updated property data, setting new fields or keeping the existing ones
         const updatedPropertyData = {
             ...existingProperty._doc, // Keep all existing fields by default
-            ...req.body, // Overwrite with any new fields from the request body
+            ...restBody,
+            type: sanitizeObjectId(type),
+            status: sanitizeObjectId(status),
+            developer: sanitizeObjectId(developer),           
             amenities: amenitiesData, // Use either new or existing
             projectOverview: projectOverviewData, // Use either new or existing
             priceDetails: priceDetailsData, // Use either new or existing

@@ -10,8 +10,8 @@ export const verifyToken = (req, res, next) => {
         }
 
         const token = authHeader.split(" ")[1];
-        console.log('Token received:', token);
-        console.log('JWT Secret:', process.env.JWT_TOKEN);
+        // console.log('Token received:', token);
+        // console.log('JWT Secret:', process.env.JWT_TOKEN);
 
         if (!token) {
             return res.status(401).json({ error: "Unauthorized: Token missing" });
@@ -19,7 +19,7 @@ export const verifyToken = (req, res, next) => {
 
         jwt.verify(token, process.env.JWT_TOKEN, (err, decoded) => {
             if (err) {
-                console.log('JWT Error:', err);
+                // console.log('JWT Error:', err);
                 return res.status(401).json({ error: "Unauthorized: Invalid token 00" });
             }
             req.decoded = decoded;
@@ -34,7 +34,7 @@ export const verifyToken = (req, res, next) => {
 // Verify Admin Middleware
 export const verifyAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
-    console.log(req.decoded.role)
+    // console.log(req.decoded.role)
     if (req.decoded.role === 'admin') { // Use req.decoded instead of req.user
       next();
     } else {
@@ -46,7 +46,7 @@ export const verifyAdmin = (req, res, next) => {
 // Verify Editor Middleware
 export const verifyEditor = (req, res, next) => {
   verifyToken(req, res, () => {
-    console.log(req.decoded.role)
+    // console.log(req.decoded.role)
     if (req.decoded.role === 'editor' || req.decoded.role === 'admin') { // Use req.decoded instead of req.user
       next();
     } else {
