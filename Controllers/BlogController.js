@@ -32,7 +32,7 @@ export const addBlog = async (req, res) => {
 // get Blogs controller:
 export const getBlogs = async (req, res) => {
     try {
-        const blogs = await blogModel.find().sort({ _id: -1 });
+        const blogs = await blogModel.find().sort({ date: -1 });
         
         res.status(200).json(blogs);
     } catch (e) {
