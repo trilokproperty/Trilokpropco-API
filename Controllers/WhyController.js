@@ -3,7 +3,9 @@ import { cloudinary } from "../utils/cloudinary.js";
 
 export const addWhy = async (req, res) => {
     try {
-        const logoResult = await cloudinary.uploader.upload(req.file.path);
+        const logoResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
         const whyData = {
             title: req.body.title,
             description: req.body.description,
@@ -42,7 +44,9 @@ export const updateWhy = async (req, res) => {
         };
 
         if (req.file) {
-            const logoResult = await cloudinary.uploader.upload(req.file.path);
+            const logoResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
             updatedData.logo = logoResult.secure_url;
         } else {
             updatedData.logo = existingWhy.logo;

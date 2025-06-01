@@ -3,7 +3,10 @@ import { cloudinary } from "../utils/cloudinary.js";
 
 export const addAbout = async (req, res) => {
     try {
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+        public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+        });
+        // console.log(imageResult,225);
         const aboutData = {
             history: req.body.history,
             mission: req.body.mission,
@@ -13,7 +16,6 @@ export const addAbout = async (req, res) => {
             locationMap: req.body.locationMap,
             imagePublicId: imageResult.public_id,
         };
-        console.log(aboutData)
         const about = new AboutModel(aboutData);
         const savedAbout = await about.save();
         res.status(200).json(savedAbout);
@@ -57,7 +59,10 @@ export const updateAbout = async (req, res) => {
             await cloudinary.uploader.destroy(existingAbout.imagePublicId);
             
             // Upload the new image
-            const imageResult = await cloudinary.uploader.upload(req.file.path);
+            const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
+            // console.log(imageResult,333);
             updatedData.founderLogo = imageResult.secure_url;
         } else {
             updatedData.imagePublicId = existingAbout.imagePublicId;

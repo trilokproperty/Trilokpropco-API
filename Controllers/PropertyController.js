@@ -75,7 +75,9 @@ export const addProperty = async (req, res) => {
     if (plansData.length > 0 && req.files['plans']) {
         const planUploadPromises = req.files['plans'].map(async (file, index) => {
             try {
-                const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+                const result = await cloudinary.uploader.upload(file.path, {
+                public_id: `${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                }); // Upload each file to Cloudinary
                 return {
                     planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
                     image: result.secure_url, // Uploaded image URL
@@ -192,7 +194,9 @@ if (req.files['bankImages']) {
         if (plansData.length > 0 && req.files['plans']) {
             const planUploadPromises = req.files['plans'].map(async (file, index) => {
                 try {
-                    const result = await cloudinary.uploader.upload(file.path); // Upload each file to Cloudinary
+                    const result = await cloudinary.uploader.upload(file.path, {
+                    public_id: `${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                    }); // Upload each file to Cloudinary
                     return {
                         planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
                         image: result.secure_url, // Uploaded image URL

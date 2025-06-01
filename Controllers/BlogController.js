@@ -8,7 +8,9 @@ export const addBlog = async (req, res) => {
         let imageResult;
         console.log(req.file)
         if (req.file) {
-            imageResult = await cloudinary.uploader.upload(req.file.path);
+            imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
         }
         const allFields = {
             category: req.body.category,
@@ -70,7 +72,9 @@ export const updateBlog = async (req, res) => {
         console.log(req.file)
         if (req.file) {
             // Upload new image if present
-            imageResult = await cloudinary.uploader.upload(req.file.path);
+            imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
             // Delete old image from Cloudinary
             if (blog.imagePublicId) {
                 await cloudinary.uploader.destroy(blog.imagePublicId);
