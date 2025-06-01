@@ -4,7 +4,9 @@ import { cloudinary } from "../utils/cloudinary.js";
 // add status controller:
 export const addStatus = async(req, res)=>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
         const status = new StatusModel({
             status: req.body.status, 
             image:imageResult.secure_url,

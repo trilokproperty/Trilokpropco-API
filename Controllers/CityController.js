@@ -5,7 +5,9 @@ import { cloudinary } from "../utils/cloudinary.js";
 // add City controller:
 export const addCity = async(req, res)=>{
     try{
-        const imageResult = await cloudinary.uploader.upload(req.file.path);
+        const imageResult = await cloudinary.uploader.upload(req.file.path, {
+            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            });
         const city = new CityModel({name: req.body.name, image:imageResult.secure_url,
             imagePublicId: imageResult.public_id})
         const savedCity = await city.save();
