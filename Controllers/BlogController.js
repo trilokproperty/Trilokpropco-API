@@ -3,13 +3,12 @@ import { cloudinary } from "../utils/cloudinary.js";
 
 // add Blog controller:
 export const addBlog = async (req, res) => {
-    console.log('Request Body:', req.body);
+    // console.log('Request Body:', req.body);
     try {
         let imageResult;
-        console.log(req.file)
         if (req.file) {
             imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
         }
         const allFields = {
