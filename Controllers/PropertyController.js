@@ -28,7 +28,7 @@ export const addProperty = async (req, res) => {
        if (req.files['galleryImages']) {
             const galleryUploadPromises = req.files['galleryImages'].map(file =>
                 cloudinary.uploader.upload(file.path, {
-                    public_id: `gallery/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                    public_id: `gallery/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
                     folder: 'gallery' // Organize uploads into a folder
                 })
             );
@@ -42,7 +42,7 @@ export const addProperty = async (req, res) => {
     if (req.files['bankImages']) {
         const bankUploadPromises = req.files['bankImages'].map(file =>
             cloudinary.uploader.upload(file.path, {
-                public_id: `bank/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                public_id: `bank/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
                 folder: 'bank' // Organize uploads into a folder
             })
         );
@@ -76,7 +76,7 @@ export const addProperty = async (req, res) => {
         const planUploadPromises = req.files['plans'].map(async (file, index) => {
             try {
                 const result = await cloudinary.uploader.upload(file.path, {
-                public_id: `${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                public_id: `${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
                 }); // Upload each file to Cloudinary
                 return {
                     planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
@@ -157,7 +157,7 @@ export const updateProperty = async (req, res) => {
        if (req.files['galleryImages']) {
     const galleryUploadPromises = req.files['galleryImages'].map(file =>
         cloudinary.uploader.upload(file.path, {
-            public_id: `gallery/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `gallery/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             folder: 'gallery' // Organize uploads into a folder
         })
     );
@@ -169,7 +169,7 @@ export const updateProperty = async (req, res) => {
 if (req.files['bankImages']) {
     const bankUploadPromises = req.files['bankImages'].map(file =>
         cloudinary.uploader.upload(file.path, {
-            public_id: `bank/${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `bank/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             folder: 'bank' // Organize uploads into a folder
         })
     );
@@ -195,7 +195,7 @@ if (req.files['bankImages']) {
             const planUploadPromises = req.files['plans'].map(async (file, index) => {
                 try {
                     const result = await cloudinary.uploader.upload(file.path, {
-                    public_id: `${file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+                    public_id: `${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
                     }); // Upload each file to Cloudinary
                     return {
                         planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
@@ -282,7 +282,7 @@ export const getSingleProperty = async (req, res) =>{
 // get property controller with property name:
 export const getSinglePropertyByName = async (req, res) => {
     const name = req.params.name;
-    console.log(name)
+    // console.log(name)
     try {
         // Case-insensitive and removing unnecessary spaces
         const property = await PropertyModel.findOne({ name: name });

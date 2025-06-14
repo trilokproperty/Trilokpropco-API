@@ -57,10 +57,25 @@ export const getSingleBlog = async (req, res) => {
     }
 };
 
+
+export const getSingleBlogEdit = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const blog = await blogModel.findById(id);
+        if (!blog) {
+            return res.status(404).json({ message: "Blog not found." });
+        }
+        res.status(200).json(blog);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
+};
+
 // update Blog
 export const updateBlog = async (req, res) => {
     const id = req.params.id;
-    console.log('Request Body:', req.body); 
+    // console.log('Request Body:', req.body); 
     try {
         const blog = await blogModel.findById(id);
         if (!blog) {
@@ -68,11 +83,11 @@ export const updateBlog = async (req, res) => {
         }
 
         let imageResult;
-        console.log(req.file)
+        // console.log(req.file)
         if (req.file) {
             // Upload new image if present
             imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
             // Delete old image from Cloudinary
             if (blog.imagePublicId) {

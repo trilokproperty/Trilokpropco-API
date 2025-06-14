@@ -5,7 +5,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 export const addTestimonial = async(req, res) =>{
     try{
         const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
         const testimonial = new TestimonialModel({
             name: req.body.name, 

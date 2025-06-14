@@ -5,7 +5,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 export const addFooter = async (req, res) => {
     try {
         const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
         const footerData = {
             description: req.body.description,
@@ -67,7 +67,7 @@ export const updateFooter = async (req, res) => {
 
         if (req.file) {
             const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
             updatedData.image = imageResult.secure_url;
         } else {

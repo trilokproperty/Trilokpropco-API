@@ -6,7 +6,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 export const addMeta = async (req, res) => {
     try {
         const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
         const metaData = {
             metaTitle: req.body.metaTitle,
@@ -41,7 +41,7 @@ export const updateMeta = async (req, res) => {
         // If a new image is uploaded, update the image
         if (req.file) {
             const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
             updatedData.FeaturedImage = imageResult.secure_url;
         }

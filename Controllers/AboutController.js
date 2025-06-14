@@ -4,7 +4,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 export const addAbout = async (req, res) => {
     try {
         const imageResult = await cloudinary.uploader.upload(req.file.path, {
-        public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+        public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
         });
         // console.log(imageResult,225);
         const aboutData = {
@@ -60,7 +60,7 @@ export const updateAbout = async (req, res) => {
             
             // Upload the new image
             const imageResult = await cloudinary.uploader.upload(req.file.path, {
-            public_id: `${req.file.originalname.split('.')[0]}`, // Use the original file name (without extension)
+            public_id: `${encodeURIComponent(req.file.originalname.split('.')[0])}`, // Use the original file name (without extension)
             });
             // console.log(imageResult,333);
             updatedData.founderLogo = imageResult.secure_url;
