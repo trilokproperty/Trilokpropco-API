@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { PropertyModel } from "../Models/PropertiesModel.js";
 import { cloudinary } from '../utils/cloudinary.js';
+import fs from "fs/promises";
 
 
 export const addProperty = async (req, res) => {
@@ -26,12 +27,21 @@ export const addProperty = async (req, res) => {
 
         // Handle gallery images
        if (req.files['galleryImages']) {
-            const galleryUploadPromises = req.files['galleryImages'].map(file =>
-                cloudinary.uploader.upload(file.path, {
-                    public_id: `gallery/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
-                    folder: 'gallery' // Organize uploads into a folder
-                })
-            );
+            const galleryUploadPromises = req.files['galleryImages'].map(async (file) => {
+                try {
+                    const result = await cloudinary.uploader.upload(file.path, {
+                    public_id: `gallery/${encodeURIComponent(file.originalname.split('.')[0])}`,
+                    folder: 'gallery',
+                    });
+
+                    await fs.unlink(file.path);
+
+                    return result;
+                } catch (error) {
+                    console.error(`Error uploading or deleting file ${file.originalname}:`, error);
+                    throw error;
+                }
+            });
             const galleryResults = await Promise.all(galleryUploadPromises);
             galleryResults.forEach(result => galleryImages.push(result.secure_url));
             // console.log('gallery worked',galleryResults);
@@ -40,12 +50,22 @@ export const addProperty = async (req, res) => {
 
     // Handle bank images
     if (req.files['bankImages']) {
-        const bankUploadPromises = req.files['bankImages'].map(file =>
-            cloudinary.uploader.upload(file.path, {
-                public_id: `bank/${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
-                folder: 'bank' // Organize uploads into a folder
-            })
-        );
+        const bankUploadPromises = req.files['bankImages'].map(async (file) => {
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+            public_id: `bank/${encodeURIComponent(file.originalname.split('.')[0])}`,
+            folder: 'bank'
+            });
+
+            // ✅ Delete local file after successful upload
+            await fs.unlink(file.path);
+
+            return result;
+        } catch (error) {
+            console.error(`Error uploading or deleting bank image ${file.originalname}:`, error);
+            throw error;
+        }
+        });
         const bankResults = await Promise.all(bankUploadPromises);
         bankResults.forEach(result => bankImages.push(result.secure_url));
         // console.log('bank worked',bankResults);
@@ -74,20 +94,25 @@ export const addProperty = async (req, res) => {
     // Proceed if plans data exists and files are present
     if (plansData.length > 0 && req.files['plans']) {
         const planUploadPromises = req.files['plans'].map(async (file, index) => {
-            try {
-                const result = await cloudinary.uploader.upload(file.path, {
-                public_id: `${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
-                }); // Upload each file to Cloudinary
-                return {
-                    planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
-                    image: result.secure_url, // Uploaded image URL
-                    size: plansData[index]?.size || "", // Use the size from the parsed plans array
-                    price: plansData[index]?.price || "" // Use the price from the parsed plans array
-                };
-            } catch (uploadError) {
-                console.error("Error uploading file:", uploadError);
-                return null;
-            }
+        try {
+            const result = await cloudinary.uploader.upload(file.path, {
+            public_id: `${encodeURIComponent(file.originalname.split('.')[0])}`,
+            folder: 'plans', // Optional: add folder if you want to organize uploads
+            });
+
+            // ✅ Delete the local file after upload
+            await fs.unlink(file.path);
+
+            return {
+            planType: plansData[index]?.planType || "",
+            image: result.secure_url,
+            size: plansData[index]?.size || "",
+            price: plansData[index]?.price || ""
+            };
+        } catch (uploadError) {
+            console.error("Error uploading or deleting plan image:", uploadError);
+            return null;
+        }
         });
 
         const planResults = await Promise.all(planUploadPromises);
@@ -121,6 +146,7 @@ export const addProperty = async (req, res) => {
             priceDetails: priceDetailsData,
             galleryImages,
             bankImages,
+            specifications,
             plans
         };
         
@@ -142,6 +168,7 @@ export const addProperty = async (req, res) => {
 export const updateProperty = async (req, res) => {
     const id = req.params.id;
     try {
+        let plans=[];
         // Find the existing property by ID
         const existingProperty = await PropertyModel.findById(id);
         if (!existingProperty) {
@@ -151,7 +178,7 @@ export const updateProperty = async (req, res) => {
         // Arrays to store uploaded image URLs or keep existing data
         const galleryImages = [...(existingProperty.galleryImages || [])];
         const bankImages = [...(existingProperty.bankImages || [])];
-        const plans = [...(existingProperty.plans || [])];
+        plans = [...(existingProperty.plans || [])];
 
         // Handle gallery images (if new ones are uploaded)
        if (req.files['galleryImages']) {
@@ -176,42 +203,56 @@ if (req.files['bankImages']) {
     const bankResults = await Promise.all(bankUploadPromises);
     bankResults.forEach(result => bankImages.push(result.secure_url));
 }
+let updatedPlans = [];
 
+let plansData = [];
+if (typeof req.body.plans === 'string') {
+  try {
+    plansData = JSON.parse(req.body.plans);
+  } catch (error) {
+    console.error("Error parsing plans:", error);
+    plansData = [];
+  }
+} else {
+  plansData = req.body.plans || [];
+}
+const uploadedFiles = req.files['plans'] || [];
+let fileIndex = 0;
 
-        // Handle plans (if new ones are uploaded)
-        let plansData;
-        if (typeof req.body.plans === 'string') {
-            try {
-                plansData = JSON.parse(req.body.plans);
-            } catch (error) {
-                console.error("Error parsing plans:", error);
-                plansData = [];
-            }
-        } else {
-            plansData = req.body.plans || [];
-        }
+for (let i = 0; i < plansData.length; i++) {
+  const plan = plansData[i];
+  let imageUrl = plans[i]?.image || '';
+    // console.log('old',i,imageUrl);
+    
+  // If there are still files left to assign, and plan image is missing or updating
+  if (fileIndex < uploadedFiles.length) {
+    const file = uploadedFiles[fileIndex];
 
-        if (plansData.length > 0 && req.files['plans']) {
-            const planUploadPromises = req.files['plans'].map(async (file, index) => {
-                try {
-                    const result = await cloudinary.uploader.upload(file.path, {
-                    public_id: `${encodeURIComponent(file.originalname.split('.')[0])}`, // Use the original file name (without extension)
-                    }); // Upload each file to Cloudinary
-                    return {
-                        planType: plansData[index]?.planType || "", // Use the planType from the parsed plans array
-                        image: result.secure_url, // Uploaded image URL
-                        size: plansData[index]?.size || "", // Use the size from the parsed plans array
-                        price: plansData[index]?.price || "" // Use the price from the parsed plans array
-                    };
-                } catch (uploadError) {
-                    console.error("Error uploading plan file:", uploadError);
-                    return null;
-                }
-            });
+    try {
+      const result = await cloudinary.uploader.upload(file.path, {
+        public_id: `plans/${encodeURIComponent(file.originalname.split('.')[0])}`,
+        folder: 'plans',
+      });
 
-            const planResults = await Promise.all(planUploadPromises);
-            plans.push(...planResults.filter(plan => plan !== null)); // Append only successful uploads
-        }
+      await fs.unlink(file.path); // Remove from local
+
+      imageUrl = result.secure_url;
+    // console.log('new',i,imageUrl);
+      fileIndex++; // Move to next file only when used
+    } catch (err) {
+      console.error(`Error uploading image for plan ${i}`, err);
+    }
+  }
+
+  updatedPlans.push({
+    planType: plan.planType || '',
+    image: imageUrl,
+    size: plan.size || '',
+    price: plan.price || '',
+  });
+}
+        // Push the updated plans to the main object
+        // property.plans = updatedPlans;
 
         // Parse JSON fields for amenities, projectOverview, priceDetails if provided, or use existing data
         const amenitiesData = req.body.amenities ? JSON.parse(req.body.amenities) : existingProperty.amenities;
@@ -238,7 +279,9 @@ if (req.files['bankImages']) {
             priceDetails: priceDetailsData, // Use either new or existing
             galleryImages, // Updated gallery images (new + existing)
             bankImages, // Updated bank images (new + existing)
-            plans // Updated plans (new + existing)
+            plans: updatedPlans.filter(
+                plan => plan.planType || plan.image || plan.size || plan.price
+            ) // Updated plans (new + existing)
         };
 
         // Update property with new data
